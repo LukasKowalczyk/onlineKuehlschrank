@@ -13,6 +13,14 @@ public class Food implements Serializable {
 	private String unit;
 	private String code;
 
+	public Food(String name, int amount, String unit, String code) {
+		super();
+		this.name = name;
+		this.amount = amount;
+		this.unit = unit;
+		this.code = code;
+	}
+
 	public String getName() {
 		return name;
 	}

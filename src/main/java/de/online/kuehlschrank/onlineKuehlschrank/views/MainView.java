@@ -16,6 +16,11 @@ import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 
 public class MainView extends VerticalLayout implements View {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String selectedId;
 	
 	@Override
@@ -34,7 +39,6 @@ public class MainView extends VerticalLayout implements View {
 		storageTable.setSelectable(true);
 		storageTable.addItemClickListener(new ItemClickListener() {
 
-
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				selectedId = event.getItemId().toString();
@@ -50,11 +54,7 @@ public class MainView extends VerticalLayout implements View {
 
 	private Collection<? extends Food> getUserStorage() {
 		ArrayList<Food> ausg = new ArrayList<Food>();
-		Food food1 = new Food();
-		food1.setAmount(1);
-		food1.setName("Apfel");
-		food1.setCode("O1");
-		food1.setUnit("Stk");
+		Food food1 = new Food("Apfel",1,"Stk","Obst1");
 		ausg.add(food1);
 		return ausg;
 	}

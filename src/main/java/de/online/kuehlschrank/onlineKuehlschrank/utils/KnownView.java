@@ -1,10 +1,10 @@
 package de.online.kuehlschrank.onlineKuehlschrank.utils;
 
-public enum RegistreredView {
-	LOGIN("login"), MAIN("main");
+public enum KnownView {
+	LOGIN("login"), MAIN("main"), REGISTRATION("registration");
 	private String name;
 
-	private RegistreredView(String name) {
+	private KnownView(String name) {
 		this.name = name;
 	}
 
