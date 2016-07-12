@@ -2,11 +2,18 @@ package de.online.kuehlschrank.onlineKuehlschrank.controle;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.data.validator.EmailValidator;
+
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
+import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.RegistrationException;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.PasswordValidator;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class UserControle {
+
+	private static final String COLLECTIONSNAME = "users";
 
 	private DatenbankControle datenbankControle;
 
@@ -24,10 +31,16 @@ public class UserControle {
 	}
 
 	public boolean validateUser(User user) {
-		if (StringUtils.isBlank(user.getPassword())) {
+		if (StringUtils.isBlank(user.getPassword())
+				|| !new PasswordValidator("").isValid(user.getPassword())) {
 			return false;
 		}
-		if (StringUtils.isBlank(user.getName())) {
+		if (StringUtils.isBlank(user.getName())
+				|| !new UsernameValidator("").isValid(user.getName())) {
+			return false;
+		}
+		if (StringUtils.isBlank(user.getEmail())
+				|| !new EmailValidator("").isValid(user.getEmail())) {
 			return false;
 		}
 		return true;
@@ -39,7 +52,12 @@ public class UserControle {
 		}
 
 		// DB-Zugriff
-		return true;
+		try {
+			return datenbankControle.findInCollection(COLLECTIONSNAME, "email",
+					user.getEmail());
+		} catch (DatenbankException e) {
+			throw new LoginException(e);
+		}
 
 	}
 
@@ -48,13 +66,31 @@ public class UserControle {
 		if (!validateUser(user)) {
 			throw new RegistrationException("Email ist schon vorhanden!");
 		}
-
+		try {
+			datenbankControle.insertToCollection(COLLECTIONSNAME, user);
+		} catch (DatenbankException e) {
+			throw new RegistrationException(e);
+		}
 		return true;
 	}
 
 	public boolean checkUsername(User user) {
 		// DB-Zugriff
-		return false;
+		try {
+			return datenbankControle.findInCollection(COLLECTIONSNAME, "name",
+					user.getName());
+		} catch (DatenbankException e) {
+			return false;
+		}
 	}
 
+	public boolean checkEmail(User user) {
+		// DB-Zugriff
+		try {
+			return datenbankControle.findInCollection(COLLECTIONSNAME, "email",
+					user.getEmail());
+		} catch (DatenbankException e) {
+			return false;
+		}
+	}
 }

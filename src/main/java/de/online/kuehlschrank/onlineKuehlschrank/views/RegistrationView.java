@@ -2,6 +2,7 @@ package de.online.kuehlschrank.onlineKuehlschrank.views;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -17,6 +18,8 @@ import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.RegistrationException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.PasswordValidator;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class RegistrationView extends VerticalLayout implements View {
 
@@ -29,13 +32,19 @@ public class RegistrationView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 
 		setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		TextField email = new TextField();
+		email.addValidator(new EmailValidator("Deine Email ist nicht richtig!"));
+		email.setCaption("Email:");
+		email.setRequired(false);
+	
 
 		TextField username = new TextField();
+		username.addValidator(new UsernameValidator("Dein Username enthält ' ' ! ? @ # + ( ) § $ & \" % * ~ ' : ; "));
 		username.setCaption("Username:");
 		username.setRequired(false);
-		username.setRequiredError("Bitte gib deinen Usernamen ein!");
 
 		PasswordField password = new PasswordField();
+		password.addValidator(new PasswordValidator("Das Passwort muss mindestens 7 Zeichen lang sein, Ein Großbuchstaben, Eine Ziffer oder ein Sonderzeichen"));
 		password.setCaption("Passwort:");
 		password.setRequired(false);
 		password.setRequiredError("Bitte gib dein Passwort ein!");
@@ -45,19 +54,23 @@ public class RegistrationView extends VerticalLayout implements View {
 		passwordSecond.setRequired(false);
 		passwordSecond.setRequiredError("Bitte gib dein Passwort ein!");
 
-		Button registrationButton = new Button("Registrieren",
-				FontAwesome.REGISTERED);
-		registrationButton.addClickListener(e -> {
+		Button signUpButton = new Button("Registrieren", FontAwesome.USER_PLUS);
+		signUpButton.addClickListener(e -> {
 			Notification.show("Vielen Dank für dein Registrierung!",
 					Notification.Type.TRAY_NOTIFICATION);
-			if (validateTextFields(username, password, passwordSecond)) {
+			if (validateTextFields(username, password, passwordSecond, email)) {
 				User user = new User(username.getValue(), passwordSecond
-						.getValue());
+						.getValue(), email.getValue());
 				if (UserControle.getInstance().checkUsername(user)) {
 					username.setRequired(true);
 					username.setRequiredError("Der Username >"
 							+ username.getValue() + "< ist schon vorhanden!");
 					username.setValue("");
+				} else if (UserControle.getInstance().checkEmail(user)) {
+					email.setRequired(true);
+					email.setRequiredError("Die Email >" + email.getValue()
+							+ "< ist schon vorhanden!");
+					email.setValue("");
 				} else {
 					try {
 						UserControle.getInstance().registration(user);
@@ -70,7 +83,8 @@ public class RegistrationView extends VerticalLayout implements View {
 					} catch (RegistrationException e1) {
 						password.setValue("");
 						passwordSecond.setValue("");
-						Notification.show("Fehler", "Ihre Eingabe sind nicht komplett",
+						Notification.show("Fehler",
+								"Ihre Eingabe sind nicht komplett",
 								Notification.Type.ERROR_MESSAGE);
 					}
 				}
@@ -83,13 +97,19 @@ public class RegistrationView extends VerticalLayout implements View {
 
 		});
 
-		addComponents(username, password, passwordSecond, registrationButton);
+		addComponents(email, username, password, passwordSecond, signUpButton);
 		setMargin(true);
 		setSpacing(true);
 	}
 
 	private boolean validateTextFields(TextField username,
-			PasswordField password, PasswordField passwordSecond) {
+			PasswordField password, PasswordField passwordSecond,
+			TextField email) {
+		if (StringUtils.isBlank(email.getValue())) {
+			email.setRequired(true);
+			email.setRequiredError("Bitte gib deine Email ein!");
+			return false;
+		}
 		if (StringUtils.isBlank(username.getValue())) {
 			username.setRequired(true);
 			return false;

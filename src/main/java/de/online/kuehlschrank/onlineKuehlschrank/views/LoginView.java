@@ -1,5 +1,6 @@
 package de.online.kuehlschrank.onlineKuehlschrank.views;
 
+import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
@@ -30,10 +31,11 @@ public class LoginView extends VerticalLayout implements View {
 
 		setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
-		final TextField username = new TextField();
-		username.setCaption("Username:");
-		username.setRequired(false);
-		username.setRequiredError("Bitte gib deinen Usernamen ein!");
+		final TextField email = new TextField();
+		email.addValidator(new EmailValidator("Deine Email ist nicht richtig!"));
+		email.setCaption("Email:");
+		email.setRequired(false);
+		email.setRequiredError("Bitte gib deine Email ein!");
 		
 		final PasswordField password = new PasswordField();
 		password.setCaption("Passwort:");
@@ -43,7 +45,7 @@ public class LoginView extends VerticalLayout implements View {
 		Button loginButton = new Button("Login", FontAwesome.SIGN_IN);
 		loginButton.addClickListener(e -> {
 
-			User user = new User(username.getValue(), password.getValue());
+			User user = new User(email.getValue(), password.getValue(),null);
 
 			UserControle userControle = UserControle.getInstance();
 			try {
@@ -56,27 +58,27 @@ public class LoginView extends VerticalLayout implements View {
 
 			} catch (LoginException e1) {
 				Notification.show("Fehler",
-						"Username oder Passwort ist falsch",
+						"Email oder Passwort ist falsch",
 						Notification.Type.ERROR_MESSAGE);
 				password.setRequired(true);
-				username.setRequired(true);
-				username.setValue("");
+				email.setRequired(true);
+				email.setValue("");
 				password.setValue("");
 			}
 
 		});
-		Button registrationButton = new Button("Registrieren", FontAwesome.REGISTERED);
-		registrationButton.addClickListener(e -> {
+		Button signUpButton = new Button("Registrieren", FontAwesome.USER_PLUS);
+		signUpButton.addClickListener(e -> {
 			Notification.show("Vielen Dank für dein Interesse!",
 					Notification.Type.TRAY_NOTIFICATION);
 			UI.getCurrent().getNavigator()
 			.navigateTo(KnownView.REGISTRATION.getName());
 		});
 
-		buttonlayout.addComponents(loginButton, registrationButton);
+		buttonlayout.addComponents(loginButton, signUpButton);
 		buttonlayout.setSpacing(true);
 
-		addComponents(username, password, buttonlayout);
+		addComponents(email, password, buttonlayout);
 		setMargin(true);
 		setSpacing(true);
 
