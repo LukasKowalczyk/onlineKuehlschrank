@@ -2,12 +2,15 @@ package de.online.kuehlschrank.onlineKuehlschrank.container;
 
 import java.io.Serializable;
 
+import de.mongoDBHelper.annotation.MongoCollectionInforamtion;
+
+@MongoCollectionInforamtion(collectionName = "foods")
 public class Food implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private String name;
 	private int amount;
 	private String unit;

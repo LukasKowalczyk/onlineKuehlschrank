@@ -13,8 +13,6 @@ import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class UserControle {
 
-	private static final String COLLECTIONSNAME = "users";
-
 	private DatenbankControle datenbankControle;
 
 	private static UserControle userControle = null;
@@ -53,7 +51,7 @@ public class UserControle {
 
 		// DB-Zugriff
 		try {
-			return datenbankControle.findInCollection(COLLECTIONSNAME, "email",
+			return datenbankControle.findInCollection(User.class, "email",
 					user.getEmail());
 		} catch (DatenbankException e) {
 			throw new LoginException(e);
@@ -67,7 +65,7 @@ public class UserControle {
 			throw new RegistrationException("Email ist schon vorhanden!");
 		}
 		try {
-			datenbankControle.insertToCollection(COLLECTIONSNAME, user);
+			datenbankControle.insertToCollection(user);
 		} catch (DatenbankException e) {
 			throw new RegistrationException(e);
 		}
@@ -77,7 +75,7 @@ public class UserControle {
 	public boolean checkUsername(User user) {
 		// DB-Zugriff
 		try {
-			return datenbankControle.findInCollection(COLLECTIONSNAME, "name",
+			return datenbankControle.findInCollection(User.class, "name",
 					user.getName());
 		} catch (DatenbankException e) {
 			return false;
@@ -87,7 +85,7 @@ public class UserControle {
 	public boolean checkEmail(User user) {
 		// DB-Zugriff
 		try {
-			return datenbankControle.findInCollection(COLLECTIONSNAME, "email",
+			return datenbankControle.findInCollection(User.class, "email",
 					user.getEmail());
 		} catch (DatenbankException e) {
 			return false;
