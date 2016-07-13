@@ -19,7 +19,7 @@ public class User implements Serializable {
 	private String password;
 	private List<Food> userStorage;
 
-	public User(String name, String password, String email) {
+	public User(String email, String password, String name) {
 		super();
 		this.name = name;
 		this.password = password;

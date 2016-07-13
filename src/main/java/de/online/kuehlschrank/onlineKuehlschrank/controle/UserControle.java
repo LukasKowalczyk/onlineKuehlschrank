@@ -33,10 +33,10 @@ public class UserControle {
 				|| !new PasswordValidator("").isValid(user.getPassword())) {
 			return false;
 		}
-		if (StringUtils.isBlank(user.getName())
-				|| !new UsernameValidator("").isValid(user.getName())) {
-			return false;
-		}
+//		if (StringUtils.isBlank(user.getName())
+//				|| !new UsernameValidator("").isValid(user.getName())) {
+//			return false;
+//		}
 		if (StringUtils.isBlank(user.getEmail())
 				|| !new EmailValidator("").isValid(user.getEmail())) {
 			return false;

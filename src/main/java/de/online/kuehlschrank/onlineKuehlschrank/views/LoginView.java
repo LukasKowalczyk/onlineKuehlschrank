@@ -17,6 +17,7 @@ import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class LoginView extends VerticalLayout implements View {
 
@@ -36,7 +37,7 @@ public class LoginView extends VerticalLayout implements View {
 		email.setCaption("Email:");
 		email.setRequired(false);
 		email.setRequiredError("Bitte gib deine Email ein!");
-		
+
 		final PasswordField password = new PasswordField();
 		password.setCaption("Passwort:");
 		password.setRequired(false);
@@ -45,7 +46,7 @@ public class LoginView extends VerticalLayout implements View {
 		Button loginButton = new Button("Login", FontAwesome.SIGN_IN);
 		loginButton.addClickListener(e -> {
 
-			User user = new User(email.getValue(), password.getValue(),null);
+			User user = new User(email.getValue(), password.getValue(), null);
 
 			UserControle userControle = UserControle.getInstance();
 			try {
@@ -57,8 +58,7 @@ public class LoginView extends VerticalLayout implements View {
 						Notification.Type.TRAY_NOTIFICATION);
 
 			} catch (LoginException e1) {
-				Notification.show("Fehler",
-						"Email oder Passwort ist falsch",
+				Notification.show("Fehler", "Email oder Passwort ist falsch",
 						Notification.Type.ERROR_MESSAGE);
 				password.setRequired(true);
 				email.setRequired(true);
@@ -72,7 +72,7 @@ public class LoginView extends VerticalLayout implements View {
 			Notification.show("Vielen Dank für dein Interesse!",
 					Notification.Type.TRAY_NOTIFICATION);
 			UI.getCurrent().getNavigator()
-			.navigateTo(KnownView.REGISTRATION.getName());
+					.navigateTo(KnownView.REGISTRATION.getName());
 		});
 
 		buttonlayout.addComponents(loginButton, signUpButton);

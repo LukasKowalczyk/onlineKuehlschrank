@@ -59,8 +59,8 @@ public class RegistrationView extends VerticalLayout implements View {
 			Notification.show("Vielen Dank für dein Registrierung!",
 					Notification.Type.TRAY_NOTIFICATION);
 			if (validateTextFields(username, password, passwordSecond, email)) {
-				User user = new User(username.getValue(), passwordSecond
-						.getValue(), email.getValue());
+				User user = new User(email.getValue(), passwordSecond
+						.getValue(), username.getValue());
 				if (UserControle.getInstance().checkUsername(user)) {
 					username.setRequired(true);
 					username.setRequiredError("Der Username >"
