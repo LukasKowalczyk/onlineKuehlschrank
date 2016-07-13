@@ -28,15 +28,15 @@ public class UserControle {
 		return userControle;
 	}
 
-	public boolean validateUser(User user) {
+	private boolean validateUser(User user) {
 		if (StringUtils.isBlank(user.getPassword())
 				|| !new PasswordValidator("").isValid(user.getPassword())) {
 			return false;
 		}
-//		if (StringUtils.isBlank(user.getName())
-//				|| !new UsernameValidator("").isValid(user.getName())) {
-//			return false;
-//		}
+		// if (StringUtils.isBlank(user.getName())
+		// || !new UsernameValidator("").isValid(user.getName())) {
+		// return false;
+		// }
 		if (StringUtils.isBlank(user.getEmail())
 				|| !new EmailValidator("").isValid(user.getEmail())) {
 			return false;
@@ -44,15 +44,18 @@ public class UserControle {
 		return true;
 	}
 
-	public boolean checkLogin(User user) throws LoginException {
+	public User checkLogin(User user) throws LoginException {
 		if (!validateUser(user)) {
 			throw new LoginException("User nicht Valide");
 		}
 
-		// DB-Zugriff
 		try {
-			return datenbankControle.findInCollection(User.class, "email",
-					user.getEmail());
+			if (datenbankControle.findInCollection(User.class, "email",
+					user.getEmail())) {
+				return datenbankControle.getCollectionElement(User.class,
+						"email", user.getEmail());
+			}
+			return null;
 		} catch (DatenbankException e) {
 			throw new LoginException(e);
 		}

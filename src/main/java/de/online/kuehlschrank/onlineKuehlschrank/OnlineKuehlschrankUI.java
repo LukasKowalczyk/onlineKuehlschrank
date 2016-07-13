@@ -22,6 +22,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
 import de.online.kuehlschrank.onlineKuehlschrank.views.LoginView;
 import de.online.kuehlschrank.onlineKuehlschrank.views.MainView;
@@ -41,16 +42,26 @@ import de.online.kuehlschrank.onlineKuehlschrank.views.RegistrationView;
 @Title("Online Kühlschrank")
 public class OnlineKuehlschrankUI extends UI {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
-		
+		User user = UI.getCurrent().getSession().getAttribute(User.class);
+		System.out.println(user);
 		Navigator navi = new Navigator(this, this);
 		navi.addView(KnownView.LOGIN.getName(), LoginView.class);
 		navi.addView(KnownView.MAIN.getName(), MainView.class);
 		navi.addView(KnownView.REGISTRATION.getName(), RegistrationView.class);
-		UI.getCurrent().getNavigator().navigateTo(KnownView.LOGIN.getName());
-		
+		if (user == null) {
+			UI.getCurrent().getNavigator()
+					.navigateTo(KnownView.LOGIN.getName());
+		} else {
+			UI.getCurrent().getNavigator().navigateTo(KnownView.MAIN.getName());
+		}
+
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "OnlineKuehlschrankUIServlet", asyncSupported = true)

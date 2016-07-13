@@ -17,6 +17,7 @@ import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.SessionKey;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class LoginView extends VerticalLayout implements View {
@@ -50,7 +51,8 @@ public class LoginView extends VerticalLayout implements View {
 
 			UserControle userControle = UserControle.getInstance();
 			try {
-				userControle.checkLogin(user);
+				user = userControle.checkLogin(user);
+				UI.getCurrent().getSession().setAttribute(User.class, user);
 				UI.getCurrent().getNavigator()
 						.navigateTo(KnownView.MAIN.getName());
 				Notification.show("Danke " + user.getName()

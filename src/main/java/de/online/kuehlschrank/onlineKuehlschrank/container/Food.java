@@ -1,6 +1,7 @@
 package de.online.kuehlschrank.onlineKuehlschrank.container;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.mongoDBHelper.annotation.MongoCollectionInforamtion;
 
@@ -15,13 +16,18 @@ public class Food implements Serializable {
 	private int amount;
 	private String unit;
 	private String code;
+	private Date exipreDate;
 
-	public Food(String name, int amount, String unit, String code) {
+
+
+	public Food(String name, int amount, String unit, String code,
+			Date exipreDate) {
 		super();
 		this.name = name;
 		this.amount = amount;
 		this.unit = unit;
 		this.code = code;
+		this.exipreDate = exipreDate;
 	}
 
 	public String getName() {
@@ -54,5 +60,13 @@ public class Food implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Date getExipreDate() {
+		return exipreDate;
+	}
+
+	public void setExipreDate(Date exipreDate) {
+		this.exipreDate = exipreDate;
 	}
 }
