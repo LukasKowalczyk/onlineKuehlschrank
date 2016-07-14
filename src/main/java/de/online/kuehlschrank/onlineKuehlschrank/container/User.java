@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import de.mongoDBHelper.annotation.MongoCollectionInforamtion;
+import de.mongoDBHelper.annotation.MongoCollectionInformation;
 
-@MongoCollectionInforamtion(collectionName = "users")
+@MongoCollectionInformation(collectionName = "users")
 public class User implements Serializable {
 
 	/**

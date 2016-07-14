@@ -2,22 +2,15 @@ package de.online.kuehlschrank.onlineKuehlschrank.controle;
 
 import org.bson.Document;
 
-import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.ListCollectionsIterable;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.CreateCollectionOptions;
 
 import de.mongoDBHelper.annotation.MongoDBHelper;
-import de.mongoDBHelper.annotation.MongoDatabaseInforamtion;
+import de.mongoDBHelper.annotation.MongoDatabaseInformation;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 
-@MongoDatabaseInforamtion(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
+@MongoDatabaseInformation(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
 public class ReinitDatenbank {
 
 	public static void main(String[] args) {

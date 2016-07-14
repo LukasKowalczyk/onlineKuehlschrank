@@ -7,15 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface MongoDatabaseInforamtion {
-	String username();
-
-	String password();
-
-	String host();
-
-	String port();
-
-	String databaseName();
-
+public @interface MongoCollectionInformation {
+	
+	String collectionName();
 }

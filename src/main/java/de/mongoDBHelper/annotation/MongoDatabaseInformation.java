@@ -7,7 +7,17 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface MongoCollectionInforamtion {
-	
-	String collectionName();
+public @interface MongoDatabaseInformation {
+	public final static String URISTART = "mongodb://";
+
+	String username();
+
+	String password();
+
+	String host();
+
+	String port();
+
+	String databaseName();
+
 }

@@ -7,17 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import com.google.gson.Gson;
-import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import de.mongoDBHelper.annotation.MongoDBHelper;
-import de.mongoDBHelper.annotation.MongoDatabaseInforamtion;
-import de.online.kuehlschrank.onlineKuehlschrank.container.User;
+import de.mongoDBHelper.annotation.MongoDatabaseInformation;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 
-@MongoDatabaseInforamtion(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
+@MongoDatabaseInformation(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
 public class DatenbankControle {
 	private static DatenbankControle datenbankControle = null;
 

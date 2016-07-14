@@ -3,9 +3,9 @@ package de.online.kuehlschrank.onlineKuehlschrank.container;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.mongoDBHelper.annotation.MongoCollectionInforamtion;
+import de.mongoDBHelper.annotation.MongoCollectionInformation;
 
-@MongoCollectionInforamtion(collectionName = "foods")
+@MongoCollectionInformation(collectionName = "foods")
 public class Food implements Serializable {
 	/**
 	 * 
