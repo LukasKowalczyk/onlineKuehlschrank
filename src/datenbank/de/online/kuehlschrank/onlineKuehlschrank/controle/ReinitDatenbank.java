@@ -1,22 +1,23 @@
 package de.online.kuehlschrank.onlineKuehlschrank.controle;
 
-import org.bson.Document;
+import java.util.List;
 
-import com.mongodb.Block;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoDatabase;
+import com.google.gson.Gson;
 
-import de.mongoDBHelper.annotation.MongoDBHelper;
-import de.mongoDBHelper.annotation.MongoDatabaseInformation;
+import de.mongelp.Mongelper;
+import de.mongelp.annotation.MongoDatabaseInformation;
+import de.mongelp.exception.MongelpCollectionConnectionException;
+import de.mongelp.exception.MongelpDatabaseConnectionException;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 
 @MongoDatabaseInformation(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
 public class ReinitDatenbank {
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+			throws MongelpDatabaseConnectionException,
+			MongelpCollectionConnectionException {
 		// TODO Auto-generated method stub
-		MongoDatabase db = MongoDBHelper
-				.getDatabaseInstance(ReinitDatenbank.class);
+		Mongelper.generateDatabaseConnection(ReinitDatenbank.class);
 
 		// new MongoClient(
 		// new MongoClientURI(
@@ -43,18 +44,11 @@ public class ReinitDatenbank {
 		// User("anna",
 		// "pasffs", "anna@gmail.com")));
 		// colls.insertOne(document2);
-		FindIterable<Document> ausg = MongoDBHelper.getCollection(db,
-				User.class).find();
+		List<User> ausg = Mongelper.getCollection(User.class);
+		for (User u : ausg) {
+			System.out.println(new Gson().toJson(u));
+		}
 
-		ausg.forEach(new Block<Document>() {
-
-			@Override
-			public void apply(Document arg0) {
-				System.out.println(arg0);
-
-			}
-
-		});
 	}
 
 }

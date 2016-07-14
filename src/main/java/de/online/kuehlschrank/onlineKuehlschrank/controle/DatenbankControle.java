@@ -7,12 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import com.google.gson.Gson;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import de.mongoDBHelper.annotation.MongoDBHelper;
-import de.mongoDBHelper.annotation.MongoDatabaseInformation;
+import de.mongelp.Mongelper;
+import de.mongelp.annotation.MongoDatabaseInformation;
+import de.mongelp.exception.MongelpCollectionConnectionException;
+import de.mongelp.exception.MongelpDatabaseConnectionException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 
 @MongoDatabaseInformation(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
@@ -22,7 +25,11 @@ public class DatenbankControle {
 	private MongoDatabase db;
 
 	private DatenbankControle() {
-		db = MongoDBHelper.getDatabaseInstance(this.getClass());
+		try {
+			Mongelper.generateDatabaseConnection(this.getClass());
+		} catch (MongelpDatabaseConnectionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static DatenbankControle getInstance() {
@@ -42,49 +49,61 @@ public class DatenbankControle {
 
 	public <T> List<T> getAllCollectionElements(Class<T> clazz)
 			throws DatenbankException {
-		List<T> ausg = Collections.emptyList();
-		FindIterable<Document> finds = MongoDBHelper.getCollection(db, clazz)
-				.find();
-		for (Document document : finds) {
-			ausg.add((T) new Gson().fromJson(document.toJson(), clazz));
+		try {
+			return Mongelper.findInCollection(clazz, new BasicDBObject());
+		} catch (MongelpDatabaseConnectionException
+				| MongelpCollectionConnectionException e) {
+			return Collections.emptyList();
 		}
-		return ausg;
 	}
 
 	public <T> T getCollectionElement(Class<T> clazz, String key, String value)
 			throws DatenbankException {
-		FindIterable<Document> iterable = MongoDBHelper
-				.getCollection(db, clazz).find(
-						new Document(key.toString(), value.toString()));
-		Document document = iterable.first();
-		if (document == null) {
+		List<T> erg;
+		try {
+			erg = Mongelper.findInCollection(clazz,
+					Mongelper.quereyBuilder(key, value));
+		} catch (MongelpDatabaseConnectionException
+				| MongelpCollectionConnectionException e) {
+			throw new DatenbankException(e);
+		}
+		if (erg.isEmpty()) {
 			throw new DatenbankException("Es wurde nichts gefunden!");
 		} else {
-			return  new Gson().fromJson(document.toJson(), clazz);
+			return erg.get(0);
 		}
 	}
 
 	public void insertToCollection(Object object) throws DatenbankException {
 		if (object != null) {
-			insertIntoCollection(
-					MongoDBHelper.getCollection(db, object.getClass()),
-					Document.parse(new Gson().toJson(object)));
+			try {
+				Mongelper.insertIntoCollection(object.getClass(), object);
+			} catch (MongelpDatabaseConnectionException
+					| MongelpCollectionConnectionException e) {
+				e.printStackTrace();
+				throw new DatenbankException(e);
+			}
 		}
 	}
 
-	public boolean findInCollection(Class<?> objectClass, String key,
+	public <T> boolean findInCollection(Class<T> objectClass, String key,
 			String value) throws DatenbankException {
 		if (StringUtils.isBlank(key) && StringUtils.isBlank(value)) {
 			return false;
 		}
 
-		FindIterable<Document> iterable = MongoDBHelper.getCollection(db,
-				objectClass).find(
-				new Document(key.toString(), value.toString()));
-		if (iterable.first() == null) {
-			throw new DatenbankException("Es wurde nichts gefunden!");
+		try {
+			List<T> erg = Mongelper.findInCollection(objectClass,
+					Mongelper.quereyBuilder(key, value));
+			if (erg.isEmpty()) {
+				throw new DatenbankException("Es wurde nichts gefunden!");
+			}
+			return true;
+		} catch (MongelpDatabaseConnectionException
+				| MongelpCollectionConnectionException e) {
+			throw new DatenbankException(e);
 		}
-		return true;
+	
 
 	}
 }
