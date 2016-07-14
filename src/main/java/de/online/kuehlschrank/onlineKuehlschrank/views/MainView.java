@@ -46,7 +46,7 @@ public class MainView extends VerticalLayout implements View {
 		user = UI.getCurrent().getSession().getAttribute(User.class);
 		user.setUserStorage((List<Food>) getUserStorage());
 		final HorizontalLayout kopfleiste = generateSiteHeader();
-
+		final HorizontalLayout fussleiste = generateFusszeile();
 		Table storageTable = generateTable();
 		storageTable.addItemClickListener(new ItemClickListener() {
 
@@ -61,12 +61,20 @@ public class MainView extends VerticalLayout implements View {
 				System.out.println(selectedId);
 			}
 		});
-		//TODO Button für Löschen, Ändern und Hinzufügen neues Foods!
-		
-		addComponents(kopfleiste, storageTable);
+		// TODO Button für Löschen, Ändern und Hinzufügen neues Foods!
+		addComponents(kopfleiste, storageTable, fussleiste);
 		setMargin(true);
 		setSpacing(true);
 
+	}
+
+	private HorizontalLayout generateFusszeile() {
+		HorizontalLayout fussleiste = new HorizontalLayout();
+		Button addButton = new Button(FontAwesome.PLUS);
+		Button deleteButton = new Button(FontAwesome.MINUS);
+		fussleiste.addComponents(addButton, deleteButton);
+		// Buttonclicklistener hinterlegen
+		return fussleiste;
 	}
 
 	private Table generateTable() {
@@ -108,16 +116,15 @@ public class MainView extends VerticalLayout implements View {
 				+ user.getName() + ")");
 		welcome.setContentMode(ContentMode.HTML);
 		Button signOutButton = new Button("Logout", FontAwesome.SIGN_OUT);
-		signOutButton
-				.addClickListener(e -> {
-					//TODO Änderungen Speichern!
-					UI.getCurrent().getSession().setAttribute(User.class, null);
-					UI.getCurrent().getNavigator()
-							.navigateTo(KnownView.LOGIN.getName());
-					Notification.show("Aufwiedersehen " + user.getName() + "!",
-							Notification.Type.TRAY_NOTIFICATION);
+		signOutButton.addClickListener(e -> {
+			// TODO Änderungen Speichern!
+				UI.getCurrent().getSession().setAttribute(User.class, null);
+				UI.getCurrent().getNavigator()
+						.navigateTo(KnownView.LOGIN.getName());
+				Notification.show("Aufwiedersehen " + user.getName() + "!",
+						Notification.Type.TRAY_NOTIFICATION);
 
-				});
+			});
 		kopfleiste.addComponents(welcome, signOutButton);
 		kopfleiste.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
