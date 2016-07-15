@@ -4,10 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.MongoCollection;
 
 import de.hongo.Hongo;
 import de.hongo.annotation.MongoDatabaseInformation;
@@ -32,14 +30,6 @@ public class DatabaseControle {
 			datenbankControle = new DatabaseControle();
 		}
 		return datenbankControle;
-	}
-
-	private void insertIntoCollection(MongoCollection<Document> collection,
-			Document document) throws DatenbankException {
-		if (document == null) {
-			throw new DatenbankException("Document ist leer!");
-		}
-		collection.insertOne(document);
 	}
 
 	public <T> List<T> getAllCollectionElements(Class<T> clazz)
@@ -84,7 +74,7 @@ public class DatabaseControle {
 	public void updateInCollection(Object object) throws DatenbankException {
 		if (object != null) {
 			try {
-				Hongo.insertIntoCollection(object);
+				Hongo.updateInCollection(object);
 			} catch (MongelpDatabaseConnectionException
 					| MongelpCollectionConnectionException e) {
 				e.printStackTrace();

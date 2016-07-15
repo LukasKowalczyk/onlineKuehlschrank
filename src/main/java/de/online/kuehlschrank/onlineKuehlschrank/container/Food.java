@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.hongo.annotation.MongoCollectionInformation;
+import de.hongo.annotation.MongoUpdateKey;
 
 @MongoCollectionInformation(collectionName = "foods", databaseName="onlinekuehlschrank")
 public class Food implements Serializable {
@@ -15,6 +16,7 @@ public class Food implements Serializable {
 	private String name;
 	private int amount;
 	private String unit;
+	@MongoUpdateKey
 	private String code;
 	private Date exipreDate;
 

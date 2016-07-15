@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.hongo.annotation.MongoCollectionInformation;
+import de.hongo.annotation.MongoUpdateKey;
 
 @MongoCollectionInformation(collectionName = "users", databaseName = "onlinekuehlschrank")
 public class User implements Serializable {
@@ -15,6 +16,7 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
+	@MongoUpdateKey
 	private String email;
 	private String password;
 	private List<Food> userStorage;
