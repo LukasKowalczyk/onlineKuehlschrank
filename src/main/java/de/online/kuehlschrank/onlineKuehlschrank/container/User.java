@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import de.mongelp.annotation.MongoCollectionInformation;
+import de.hongo.annotation.MongoCollectionInformation;
 
-@MongoCollectionInformation(collectionName = "users", databaseName="onlinekuehlschrank")
+@MongoCollectionInformation(collectionName = "users", databaseName = "onlinekuehlschrank")
 public class User implements Serializable {
 
 	/**
@@ -66,5 +66,18 @@ public class User implements Serializable {
 
 	public void setUserStorage(List<Food> userStorage) {
 		this.userStorage = userStorage;
+	}
+
+	public void deleteFoodInUserStorage(String code) {
+		Food selectedFood = null;
+		for (Food food : userStorage) {
+			if (food.getCode().equals(code)) {
+				selectedFood = food;
+				break;
+			}
+		}
+		if (selectedFood != null) {
+			userStorage.remove(selectedFood);
+		}
 	}
 }

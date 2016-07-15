@@ -18,7 +18,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
-	<repositories>
+	<repositories>		
 		<repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
@@ -53,9 +53,9 @@
 
 	<dependencies>
 		<dependency>
-		    <groupId>com.github.LukasKowalczyk</groupId>
-		    <artifactId>mongelp</artifactId>
-		    <version>v0.0.3</version>
+    		<groupId>com.github.LukasKowalczyk</groupId>
+    		<artifactId>hongo</artifactId>
+    		<version>s0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -141,15 +141,15 @@
 					<strict>true</strict>
 				</configuration>
 				<executions>
-					<execution>
+					<!--<execution>
 						<goals>
 							<goal>update-theme</goal>
 							<goal>update-widgetset</goal>
 							<goal>compile</goal>
-							<!-- Comment out compile-theme goal to use on-the-fly theme compilation -->
-							<goal>compile-theme</goal>
+							 Comment out compile-theme goal to use on-the-fly theme compilation -->
+							<!--<goal>compile-theme</goal>
 						</goals>
-					</execution>
+					</execution>-->
 				</executions>
 			</plugin>
 			<plugin>

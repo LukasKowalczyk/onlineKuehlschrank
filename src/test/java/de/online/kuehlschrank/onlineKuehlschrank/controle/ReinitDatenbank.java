@@ -1,13 +1,17 @@
 package de.online.kuehlschrank.onlineKuehlschrank.controle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
 
-import de.mongelp.Mongelper;
-import de.mongelp.annotation.MongoDatabaseInformation;
-import de.mongelp.exception.MongelpCollectionConnectionException;
-import de.mongelp.exception.MongelpDatabaseConnectionException;
+import de.hongo.Hongo;
+import de.hongo.annotation.MongoDatabaseInformation;
+import de.hongo.enums.LogicalMongoDBWord;
+import de.hongo.exception.LogicalMongoDBWordException;
+import de.hongo.exception.MongelpCollectionConnectionException;
+import de.hongo.exception.MongelpDatabaseConnectionException;
+import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 
 @MongoDatabaseInformation(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
@@ -15,9 +19,9 @@ public class ReinitDatenbank {
 
 	public static void main(String[] args)
 			throws MongelpDatabaseConnectionException,
-			MongelpCollectionConnectionException {
+			MongelpCollectionConnectionException, LogicalMongoDBWordException {
 		// TODO Auto-generated method stub
-		Mongelper.generateDatabaseConnection(ReinitDatenbank.class);
+		Hongo.generateDatabaseConnection(ReinitDatenbank.class);
 
 		// new MongoClient(
 		// new MongoClientURI(
@@ -44,9 +48,21 @@ public class ReinitDatenbank {
 		// User("anna",
 		// "pasffs", "anna@gmail.com")));
 		// colls.insertOne(document2);
-		List<User> ausg = Mongelper.getCollection(User.class);
+		List<Object> arrayList = new ArrayList<>();
+		arrayList.add("anna");
+		arrayList.add("test");
+
+		System.out.println(Hongo.quereyBuilder("name", arrayList,
+				LogicalMongoDBWord.IN));
+//		List<User> ausg = Mongelper.findInCollection(User.class, Mongelper
+//				.quereyBuilder("name", arrayList, LogicalMongoDBWord.IN));
+		List<User> ausg = Hongo.getCollection(User.class);
 		for (User u : ausg) {
 			System.out.println(new Gson().toJson(u));
+		}
+		List<Food> ausg2 = Hongo.getCollection(Food.class);
+		for (Food f : ausg2) {
+			System.out.println(new Gson().toJson(f));
 		}
 
 	}

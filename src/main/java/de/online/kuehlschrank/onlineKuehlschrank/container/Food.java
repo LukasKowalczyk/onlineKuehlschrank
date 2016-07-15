@@ -3,7 +3,7 @@ package de.online.kuehlschrank.onlineKuehlschrank.container;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.mongelp.annotation.MongoCollectionInformation;
+import de.hongo.annotation.MongoCollectionInformation;
 
 @MongoCollectionInformation(collectionName = "foods", databaseName="onlinekuehlschrank")
 public class Food implements Serializable {

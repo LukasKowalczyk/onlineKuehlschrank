@@ -9,16 +9,15 @@ import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.RegistrationException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.PasswordValidator;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class UserControle {
 
-	private DatenbankControle datenbankControle;
+	private DatabaseControle datenbankControle;
 
 	private static UserControle userControle = null;
 
 	private UserControle() {
-		datenbankControle = DatenbankControle.getInstance();
+		datenbankControle = DatabaseControle.getInstance();
 	}
 
 	public static UserControle getInstance() {

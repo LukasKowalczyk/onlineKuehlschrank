@@ -6,35 +6,30 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
-import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
-import de.mongelp.Mongelper;
-import de.mongelp.annotation.MongoDatabaseInformation;
-import de.mongelp.exception.MongelpCollectionConnectionException;
-import de.mongelp.exception.MongelpDatabaseConnectionException;
+import de.hongo.Hongo;
+import de.hongo.annotation.MongoDatabaseInformation;
+import de.hongo.exception.MongelpCollectionConnectionException;
+import de.hongo.exception.MongelpDatabaseConnectionException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 
 @MongoDatabaseInformation(databaseName = "onlinekuehlschrank", username = "admin", password = "admin", host = "ds053972.mlab.com", port = "53972")
-public class DatenbankControle {
-	private static DatenbankControle datenbankControle = null;
+public class DatabaseControle {
+	private static DatabaseControle datenbankControle = null;
 
-	private MongoDatabase db;
-
-	private DatenbankControle() {
+	private DatabaseControle() {
 		try {
-			Mongelper.generateDatabaseConnection(this.getClass());
+			Hongo.generateDatabaseConnection(this.getClass());
 		} catch (MongelpDatabaseConnectionException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static DatenbankControle getInstance() {
+	public static DatabaseControle getInstance() {
 		if (datenbankControle == null) {
-			datenbankControle = new DatenbankControle();
+			datenbankControle = new DatabaseControle();
 		}
 		return datenbankControle;
 	}
@@ -50,7 +45,7 @@ public class DatenbankControle {
 	public <T> List<T> getAllCollectionElements(Class<T> clazz)
 			throws DatenbankException {
 		try {
-			return Mongelper.findInCollection(clazz, new BasicDBObject());
+			return Hongo.findInCollection(clazz, new BasicDBObject());
 		} catch (MongelpDatabaseConnectionException
 				| MongelpCollectionConnectionException e) {
 			return Collections.emptyList();
@@ -61,8 +56,8 @@ public class DatenbankControle {
 			throws DatenbankException {
 		List<T> erg;
 		try {
-			erg = Mongelper.findInCollection(clazz,
-					Mongelper.quereyBuilder(key, value));
+			erg = Hongo
+					.findInCollection(clazz, Hongo.quereyBuilder(key, value));
 		} catch (MongelpDatabaseConnectionException
 				| MongelpCollectionConnectionException e) {
 			throw new DatenbankException(e);
@@ -77,7 +72,19 @@ public class DatenbankControle {
 	public void insertToCollection(Object object) throws DatenbankException {
 		if (object != null) {
 			try {
-				Mongelper.insertIntoCollection(object.getClass(), object);
+				Hongo.insertIntoCollection(object);
+			} catch (MongelpDatabaseConnectionException
+					| MongelpCollectionConnectionException e) {
+				e.printStackTrace();
+				throw new DatenbankException(e);
+			}
+		}
+	}
+
+	public void updateInCollection(Object object) throws DatenbankException {
+		if (object != null) {
+			try {
+				Hongo.insertIntoCollection(object);
 			} catch (MongelpDatabaseConnectionException
 					| MongelpCollectionConnectionException e) {
 				e.printStackTrace();
@@ -93,8 +100,8 @@ public class DatenbankControle {
 		}
 
 		try {
-			List<T> erg = Mongelper.findInCollection(objectClass,
-					Mongelper.quereyBuilder(key, value));
+			List<T> erg = Hongo.findInCollection(objectClass,
+					Hongo.quereyBuilder(key, value));
 			if (erg.isEmpty()) {
 				throw new DatenbankException("Es wurde nichts gefunden!");
 			}
@@ -103,7 +110,6 @@ public class DatenbankControle {
 				| MongelpCollectionConnectionException e) {
 			throw new DatenbankException(e);
 		}
-	
 
 	}
 }

@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -26,19 +28,21 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
-import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
-import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
+import de.online.kuehlschrank.onlineKuehlschrank.controle.DatabaseControle;
+import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
 
 public class MainView extends VerticalLayout implements View {
 
 	private static final String MIN_HALTBARKEIT = " Min. Haltbarkeit";
+	private Table storageTable = new Table("Voratskammer");
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private User user;
 	private String selectedId;
+	private AddFoodToUserStorage window;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -46,7 +50,7 @@ public class MainView extends VerticalLayout implements View {
 		user = UI.getCurrent().getSession().getAttribute(User.class);
 		user.setUserStorage((List<Food>) getUserStorage());
 		final HorizontalLayout kopfleiste = generateSiteHeader();
-		final HorizontalLayout fussleiste = generateFusszeile();
+		final HorizontalLayout fussleiste = generateSiteFooter();
 		Table storageTable = generateTable();
 		storageTable.addItemClickListener(new ItemClickListener() {
 
@@ -58,36 +62,64 @@ public class MainView extends VerticalLayout implements View {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				selectedId = event.getItemId().toString();
-				System.out.println(selectedId);
 			}
 		});
-		// TODO Button für Löschen, Ändern und Hinzufügen neues Foods!
 		addComponents(kopfleiste, storageTable, fussleiste);
+		setComponentAlignment(fussleiste, Alignment.MIDDLE_CENTER);
 		setMargin(true);
 		setSpacing(true);
 
 	}
 
-	private HorizontalLayout generateFusszeile() {
+	private HorizontalLayout generateSiteFooter() {
 		HorizontalLayout fussleiste = new HorizontalLayout();
 		Button addButton = new Button(FontAwesome.PLUS);
+		addButton.addClickListener(e -> {
+
+			if (window == null) {
+				window = new AddFoodToUserStorage("Add Food");
+			}
+			if (!window.isAttached()) {
+				UI.getCurrent().addWindow(window);
+			}
+//			try {
+//				updateUserInDatabase();
+//			} catch (Exception e1) {
+//				e1.printStackTrace();
+//			}
+		});
 		Button deleteButton = new Button(FontAwesome.MINUS);
+		deleteButton.addClickListener(e -> {
+			if (StringUtils.isNoneBlank(selectedId)) {
+				user.deleteFoodInUserStorage(selectedId);
+				setFoodInTable();
+				selectedId = null;
+				try {
+					updateUserInDatabase();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		fussleiste.addComponents(addButton, deleteButton);
-		// Buttonclicklistener hinterlegen
+		fussleiste.setComponentAlignment(addButton, Alignment.MIDDLE_CENTER);
+		fussleiste.setComponentAlignment(deleteButton, Alignment.MIDDLE_CENTER);
 		return fussleiste;
 	}
 
+	private void updateUserInDatabase() throws DatenbankException {
+
+		DatabaseControle.getInstance().insertToCollection(user);
+	}
+
 	private Table generateTable() {
-		Table storageTable = new Table("Voratskammer");
+
 		storageTable.addContainerProperty("Name", String.class, null);
 		storageTable.addContainerProperty("Anzahl", Integer.class, null);
 		storageTable.addContainerProperty("Einheit", String.class, null);
 		storageTable.addContainerProperty(MIN_HALTBARKEIT, Date.class, null);
 		storageTable.setColumnIcon(MIN_HALTBARKEIT, FontAwesome.CALENDAR);
 		storageTable.setConverter(MIN_HALTBARKEIT, new StringToDateConverter() {
-			/**
-					 * 
-					 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -97,15 +129,20 @@ public class MainView extends VerticalLayout implements View {
 
 		});
 
+		setFoodInTable();
+		storageTable.setSizeFull();
+		storageTable.setPageLength(user.getUserStorage().size());
+		storageTable.setSelectable(true);
+		return storageTable;
+	}
+
+	private void setFoodInTable() {
+		storageTable.removeAllItems();
 		for (Food f : user.getUserStorage()) {
 			storageTable.addItem(
 					new Object[] { f.getName(), f.getAmount(), f.getUnit(),
 							f.getExipreDate() }, f.getCode());
 		}
-		storageTable.setSizeFull();
-		storageTable.setPageLength(user.getUserStorage().size());
-		storageTable.setSelectable(true);
-		return storageTable;
 	}
 
 	private HorizontalLayout generateSiteHeader() {
@@ -117,14 +154,19 @@ public class MainView extends VerticalLayout implements View {
 		welcome.setContentMode(ContentMode.HTML);
 		Button signOutButton = new Button("Logout", FontAwesome.SIGN_OUT);
 		signOutButton.addClickListener(e -> {
-			// TODO Änderungen Speichern!
+			try {
+				window.close();
+				updateUserInDatabase();
 				UI.getCurrent().getSession().setAttribute(User.class, null);
 				UI.getCurrent().getNavigator()
 						.navigateTo(KnownView.LOGIN.getName());
 				Notification.show("Aufwiedersehen " + user.getName() + "!",
 						Notification.Type.TRAY_NOTIFICATION);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 
-			});
+		});
 		kopfleiste.addComponents(welcome, signOutButton);
 		kopfleiste.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
