@@ -1,7 +1,5 @@
 package de.online.kuehlschrank.onlineKuehlschrank.views;
 
-import java.util.Date;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -16,9 +14,9 @@ import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.DatabaseControle;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.EanValidator;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.NumberValidator;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.Units;
-import elemental.html.Database;
 
 public class AddFoodToUserStorage extends Window {
 
@@ -69,7 +67,7 @@ public class AddFoodToUserStorage extends Window {
 		amount.addValidator(new NumberValidator("Bitte gib eine Anzahl ein!"));
 		final ComboBox unit = new ComboBox("Einheit");
 		unit.setNullSelectionAllowed(false);
-		unit.addItems(Units.values());
+		unit.addItems((Object[]) Units.values());
 		amountAndUnit.addComponents(amount, unit);
 		final DateField expireDate = new DateField("Min. Haltbarkeit");
 		expireDate.setDateFormat("dd.MM.yyyy");
@@ -94,8 +92,7 @@ public class AddFoodToUserStorage extends Window {
 				Food food = new Food(name.getValue(), Integer.parseInt(amount
 						.getValue()), Units.getUnit(unit.getConvertedValue()
 						.toString()), code.getValue(), expireDate.getValue());
-				User u = UI.getCurrent().getSession()
-						.getAttribute(User.class);
+				User u = UI.getCurrent().getSession().getAttribute(User.class);
 				if (selectedFood == null) {
 					u.addFood(food);
 					DatabaseControle.getInstance().insertToCollection(u);
@@ -107,6 +104,7 @@ public class AddFoodToUserStorage extends Window {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
+			UI.getCurrent().getNavigator().navigateTo(KnownView.MAIN.getName());
 			close();
 		});
 

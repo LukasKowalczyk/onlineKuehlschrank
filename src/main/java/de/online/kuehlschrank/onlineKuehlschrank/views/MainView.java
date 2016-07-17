@@ -50,7 +50,7 @@ public class MainView extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		user = UI.getCurrent().getSession().getAttribute(User.class);
-		user.setUserStorage((List<Food>) getUserStorage());
+		// user.setUserStorage((List<Food>) getUserStorage());
 		final HorizontalLayout kopfleiste = generateSiteHeader();
 		final HorizontalLayout fussleiste = generateSiteFooter();
 		Table storageTable = generateTable();
@@ -88,8 +88,8 @@ public class MainView extends VerticalLayout implements View {
 							}
 						}
 					}
-					window = new AddFoodToUserStorage("Lebensmittel bearbeiten",
-							f);
+					window = new AddFoodToUserStorage(
+							"Lebensmittel bearbeiten", f);
 					if (!window.isAttached()) {
 						UI.getCurrent().addWindow(window);
 					}
@@ -127,6 +127,7 @@ public class MainView extends VerticalLayout implements View {
 					e1.printStackTrace();
 				}
 			}
+
 		});
 		fussleiste.addComponents(addButton, deleteButton);
 		fussleiste.setComponentAlignment(addButton, Alignment.MIDDLE_CENTER);
@@ -182,7 +183,9 @@ public class MainView extends VerticalLayout implements View {
 		Button signOutButton = new Button("Logout", FontAwesome.SIGN_OUT);
 		signOutButton.addClickListener(e -> {
 			try {
-				window.close();
+				if (window != null) {
+					window.close();
+				}
 				updateUserInDatabase();
 				UI.getCurrent().getSession().setAttribute(User.class, null);
 				UI.getCurrent().getNavigator()
@@ -202,12 +205,7 @@ public class MainView extends VerticalLayout implements View {
 	}
 
 	private Collection<? extends Food> getUserStorage() {
-		ArrayList<Food> ausg = new ArrayList<Food>();
-		Food food1 = new Food("Apfel", 1, Units.PIECE, "123456789000", new Date());
-		ausg.add(food1);
-		Food food2 = new Food("Wurst", 100, Units.GRAMM, "123456789001", new Date());
-		ausg.add(food2);
-		return ausg;
+		return user.getUserStorage();
 	}
 
 }

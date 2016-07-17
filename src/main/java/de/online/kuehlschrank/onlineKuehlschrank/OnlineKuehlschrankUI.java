@@ -39,7 +39,6 @@ public class OnlineKuehlschrankUI extends UI {
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		User user = UI.getCurrent().getSession().getAttribute(User.class);
-		System.out.println(user);
 		Navigator navi = new Navigator(this, this);
 		navi.addView(KnownView.LOGIN.getName(), LoginView.class);
 		navi.addView(KnownView.MAIN.getName(), MainView.class);
