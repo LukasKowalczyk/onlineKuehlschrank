@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -31,15 +32,16 @@ import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.DatabaseControle;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.Units;
 
 public class MainView extends VerticalLayout implements View {
 
-	private static final String MIN_HALTBARKEIT = " Min. Haltbarkeit";
-	private Table storageTable = new Table("Voratskammer");
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6421990200334024396L;
+	private static final String MIN_HALTBARKEIT = " Min. Haltbarkeit";
+	private Table storageTable = new Table("Voratskammer");
 	private User user;
 	private String selectedId;
 	private AddFoodToUserStorage window;
@@ -62,6 +64,38 @@ public class MainView extends VerticalLayout implements View {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				selectedId = event.getItemId().toString();
+				if (event.isDoubleClick()) {
+					Item i = storageTable.getItem(selectedId);
+					Food f = new Food();
+					if (StringUtils.isNoneBlank(selectedId)) {
+						f.setCode(selectedId);
+						for (Object o : i.getItemPropertyIds()) {
+							if (o.toString().equals("Name")) {
+								f.setName((String) i.getItemProperty(o)
+										.getValue());
+							} else if (o.toString().equals("Anzahl")) {
+								f.setAmount((int) i.getItemProperty(o)
+										.getValue());
+							} else if (o.toString().equals("Anzahl")) {
+								f.setAmount((int) i.getItemProperty(o)
+										.getValue());
+							} else if (o.toString().equals("Einheit")) {
+								f.setUnit(Units.getUnit((String) i
+										.getItemProperty(o).getValue()));
+							} else if (o.toString().equals(" Min. Haltbarkeit")) {
+								f.setExipreDate((Date) i.getItemProperty(o)
+										.getValue());
+							}
+						}
+					}
+					window = new AddFoodToUserStorage("Lebensmittel bearbeiten",
+							f);
+					if (!window.isAttached()) {
+						UI.getCurrent().addWindow(window);
+					}
+					storageTable.select(null);
+					selectedId = null;
+				}
 			}
 		});
 		addComponents(kopfleiste, storageTable, fussleiste);
@@ -76,17 +110,10 @@ public class MainView extends VerticalLayout implements View {
 		Button addButton = new Button(FontAwesome.PLUS);
 		addButton.addClickListener(e -> {
 
-			if (window == null) {
-				window = new AddFoodToUserStorage("Add Food");
-			}
+			window = new AddFoodToUserStorage("Lebensmittel hinzufügen", null);
 			if (!window.isAttached()) {
 				UI.getCurrent().addWindow(window);
 			}
-//			try {
-//				updateUserInDatabase();
-//			} catch (Exception e1) {
-//				e1.printStackTrace();
-//			}
 		});
 		Button deleteButton = new Button(FontAwesome.MINUS);
 		deleteButton.addClickListener(e -> {
@@ -113,7 +140,6 @@ public class MainView extends VerticalLayout implements View {
 	}
 
 	private Table generateTable() {
-
 		storageTable.addContainerProperty("Name", String.class, null);
 		storageTable.addContainerProperty("Anzahl", Integer.class, null);
 		storageTable.addContainerProperty("Einheit", String.class, null);
@@ -139,9 +165,10 @@ public class MainView extends VerticalLayout implements View {
 	private void setFoodInTable() {
 		storageTable.removeAllItems();
 		for (Food f : user.getUserStorage()) {
-			storageTable.addItem(
-					new Object[] { f.getName(), f.getAmount(), f.getUnit(),
-							f.getExipreDate() }, f.getCode());
+			storageTable
+					.addItem(new Object[] { f.getName(), f.getAmount(),
+							f.getUnit().getUnitName(), f.getExipreDate() },
+							f.getCode());
 		}
 	}
 
@@ -176,9 +203,9 @@ public class MainView extends VerticalLayout implements View {
 
 	private Collection<? extends Food> getUserStorage() {
 		ArrayList<Food> ausg = new ArrayList<Food>();
-		Food food1 = new Food("Apfel", 1, "Stk", "Obst1", new Date());
+		Food food1 = new Food("Apfel", 1, Units.PIECE, "123456789000", new Date());
 		ausg.add(food1);
-		Food food2 = new Food("Wurst", 100, "g", "Fleisch1", new Date());
+		Food food2 = new Food("Wurst", 100, Units.GRAMM, "123456789001", new Date());
 		ausg.add(food2);
 		return ausg;
 	}

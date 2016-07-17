@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.hongo.annotation.MongoCollectionInformation;
 import de.hongo.annotation.MongoUpdateKey;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.Units;
 
 @MongoCollectionInformation(collectionName = "foods", databaseName="onlinekuehlschrank")
 public class Food implements Serializable {
@@ -15,14 +16,20 @@ public class Food implements Serializable {
 
 	private String name;
 	private int amount;
-	private String unit;
+	private Units unit;
 	@MongoUpdateKey
 	private String code;
 	private Date exipreDate;
 
+	public Food(){
+		this.name = "";
+		this.amount = 0;
+		this.unit = null;
+		this.code = "";
+		this.exipreDate = new Date();
+	}
 
-
-	public Food(String name, int amount, String unit, String code,
+	public Food(String name, int amount, Units unit, String code,
 			Date exipreDate) {
 		super();
 		this.name = name;
@@ -48,11 +55,11 @@ public class Food implements Serializable {
 		this.amount = amount;
 	}
 
-	public String getUnit() {
+	public Units getUnit() {
 		return unit;
 	}
 
-	public void setUnit(String unit) {
+	public void setUnit(Units unit) {
 		this.unit = unit;
 	}
 

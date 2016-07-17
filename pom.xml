@@ -55,7 +55,7 @@
 		<dependency>
     		<groupId>com.github.LukasKowalczyk</groupId>
     		<artifactId>hongo</artifactId>
-    		<version>s0.0</version>
+    		<version>s0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

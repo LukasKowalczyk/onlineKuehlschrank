@@ -20,10 +20,11 @@ import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
 
 public class LoginView extends VerticalLayout implements View {
 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3730138824162367154L;
 
 	@Override
 	public void enter(ViewChangeEvent event) {

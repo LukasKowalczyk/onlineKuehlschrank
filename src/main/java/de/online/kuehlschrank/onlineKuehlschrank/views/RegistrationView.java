@@ -23,10 +23,11 @@ import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
 
 public class RegistrationView extends VerticalLayout implements View {
 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3645447358966856980L;
 
 	@Override
 	public void enter(ViewChangeEvent event) {

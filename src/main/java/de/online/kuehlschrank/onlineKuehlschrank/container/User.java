@@ -82,4 +82,8 @@ public class User implements Serializable {
 			userStorage.remove(selectedFood);
 		}
 	}
+
+	public void addFood(Food food) {
+		userStorage.add(food);
+	}
 }

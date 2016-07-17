@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 
 import de.hongo.Hongo;
 import de.hongo.annotation.MongoDatabaseInformation;
-import de.hongo.enums.LogicalMongoDBWord;
+import de.hongo.enums.MongoDBConstants;
 import de.hongo.exception.LogicalMongoDBWordException;
 import de.hongo.exception.MongelpCollectionConnectionException;
 import de.hongo.exception.MongelpDatabaseConnectionException;
@@ -53,7 +53,7 @@ public class ReinitDatenbank {
 		arrayList.add("test");
 
 		System.out.println(Hongo.quereyBuilder("name", arrayList,
-				LogicalMongoDBWord.IN));
+				MongoDBConstants.IN));
 //		List<User> ausg = Mongelper.findInCollection(User.class, Mongelper
 //				.quereyBuilder("name", arrayList, LogicalMongoDBWord.IN));
 		List<User> ausg = Hongo.getCollection(User.class);
