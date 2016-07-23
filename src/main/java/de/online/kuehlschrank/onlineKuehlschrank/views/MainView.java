@@ -2,10 +2,7 @@ package de.online.kuehlschrank.onlineKuehlschrank.views;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,176 +19,199 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import de.lapi.Lapi;
 import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
-import de.online.kuehlschrank.onlineKuehlschrank.controle.DatabaseControle;
-import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
+import de.online.kuehlschrank.onlineKuehlschrank.controle.FoodControle;
+import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.LapiKeynames;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.Units;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.ViewKeynames;
 
 public class MainView extends VerticalLayout implements View {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6421990200334024396L;
-	private static final String MIN_HALTBARKEIT = " Min. Haltbarkeit";
-	private Table storageTable = new Table("Voratskammer");
-	private User user;
-	private String selectedId;
-	private AddFoodToUserStorage window;
+	private Lapi lapi;
 
-	@SuppressWarnings("unchecked")
+	private FoodControle foodControle;
+
+	private UserControle userControle;
+
+	private static final long serialVersionUID = -6421990200334024396L;
+
+	private Table storageTable;
+
+	private User signedUpUser;
+
+	private String selectedId;
+
+	private static EditFoodOfUserStorageWindow window;
+
 	@Override
 	public void enter(ViewChangeEvent event) {
-		user = UI.getCurrent().getSession().getAttribute(User.class);
-		// user.setUserStorage((List<Food>) getUserStorage());
+		lapi = Lapi.getInstance();
+		foodControle = FoodControle.getInstance();
+		userControle = UserControle.getInstance();
+		storageTable = new Table(lapi.getText(LapiKeynames.STORAGE_TABLE_TITEL));
+		signedUpUser = UserControle.getCurrentUser();
 		final HorizontalLayout kopfleiste = generateSiteHeader();
-		final HorizontalLayout fussleiste = generateSiteFooter();
 		Table storageTable = generateTable();
 		storageTable.addItemClickListener(new ItemClickListener() {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				selectedId = event.getItemId().toString();
 				if (event.isDoubleClick()) {
-					Item i = storageTable.getItem(selectedId);
-					Food f = new Food();
-					if (StringUtils.isNoneBlank(selectedId)) {
-						f.setCode(selectedId);
-						for (Object o : i.getItemPropertyIds()) {
-							if (o.toString().equals("Name")) {
-								f.setName((String) i.getItemProperty(o)
-										.getValue());
-							} else if (o.toString().equals("Anzahl")) {
-								f.setAmount((int) i.getItemProperty(o)
-										.getValue());
-							} else if (o.toString().equals("Anzahl")) {
-								f.setAmount((int) i.getItemProperty(o)
-										.getValue());
-							} else if (o.toString().equals("Einheit")) {
-								f.setUnit(Units.getUnit((String) i
-										.getItemProperty(o).getValue()));
-							} else if (o.toString().equals(" Min. Haltbarkeit")) {
-								f.setExipreDate((Date) i.getItemProperty(o)
-										.getValue());
-							}
-						}
-					}
-					window = new AddFoodToUserStorage(
-							"Lebensmittel bearbeiten", f);
-					if (!window.isAttached()) {
-						UI.getCurrent().addWindow(window);
-					}
+					Food f = getFoodFromTable();
+					generateFoodWindow(f,
+							lapi.getText(LapiKeynames.WINDOW_UPDATE));
 					storageTable.select(null);
 					selectedId = null;
 				}
 			}
+
+			private Food getFoodFromTable() {
+				Item i = storageTable.getItem(selectedId);
+				Food food = new Food();
+				if (StringUtils.isNoneBlank(selectedId)) {
+					food.setCode(selectedId);
+					for (Object o : i.getItemPropertyIds()) {
+						if (o.toString()
+								.equals(lapi.getText(LapiKeynames.NAME))) {
+							food.setName((String) i.getItemProperty(o)
+									.getValue());
+						} else if (o.toString().equals(
+								lapi.getText(LapiKeynames.AMOUNT))) {
+							food.setAmount((int) i.getItemProperty(o)
+									.getValue());
+						} else if (o.toString().equals(
+								lapi.getText(LapiKeynames.UNIT))) {
+							food.setUnit(Units.getUnit((String) i
+									.getItemProperty(o).getValue()));
+						} else if (o.toString().equals(
+								lapi.getText(LapiKeynames.EXPIRE_DATE))) {
+							food.setExipreDate((Date) i.getItemProperty(o)
+									.getValue());
+						}
+					}
+				}
+				return food;
+			}
+
 		});
-		addComponents(kopfleiste, storageTable, fussleiste);
-		setComponentAlignment(fussleiste, Alignment.MIDDLE_CENTER);
+		Button addButton = new Button(lapi.getText(LapiKeynames.FOOD),
+				FontAwesome.PLUS);
+		addButton.addClickListener(e -> {
+			generateFoodWindow(null, lapi.getText(LapiKeynames.WINDOW_NEW));
+		});
+		addComponents(kopfleiste, storageTable, addButton);
+		setComponentAlignment(addButton, Alignment.MIDDLE_CENTER);
 		setMargin(true);
 		setSpacing(true);
 
 	}
 
-	private HorizontalLayout generateSiteFooter() {
-		HorizontalLayout fussleiste = new HorizontalLayout();
-		Button addButton = new Button(FontAwesome.PLUS);
-		addButton.addClickListener(e -> {
-
-			window = new AddFoodToUserStorage("Lebensmittel hinzufügen", null);
-			if (!window.isAttached()) {
-				UI.getCurrent().addWindow(window);
-			}
-		});
-		Button deleteButton = new Button(FontAwesome.MINUS);
-		deleteButton.addClickListener(e -> {
-			if (StringUtils.isNoneBlank(selectedId)) {
-				user.deleteFoodInUserStorage(selectedId);
-				setFoodInTable();
-				selectedId = null;
-				try {
-					updateUserInDatabase();
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-
-		});
-		fussleiste.addComponents(addButton, deleteButton);
-		fussleiste.setComponentAlignment(addButton, Alignment.MIDDLE_CENTER);
-		fussleiste.setComponentAlignment(deleteButton, Alignment.MIDDLE_CENTER);
-		return fussleiste;
-	}
-
-	private void updateUserInDatabase() throws DatenbankException {
-
-		DatabaseControle.getInstance().insertToCollection(user);
+	private static void generateFoodWindow(Food f, String títel) {
+		window = new EditFoodOfUserStorageWindow(títel, f);
+		if (!window.isAttached()) {
+			UI.getCurrent().addWindow(window);
+		}
 	}
 
 	private Table generateTable() {
-		storageTable.addContainerProperty("Name", String.class, null);
-		storageTable.addContainerProperty("Anzahl", Integer.class, null);
-		storageTable.addContainerProperty("Einheit", String.class, null);
-		storageTable.addContainerProperty(MIN_HALTBARKEIT, Date.class, null);
-		storageTable.setColumnIcon(MIN_HALTBARKEIT, FontAwesome.CALENDAR);
-		storageTable.setConverter(MIN_HALTBARKEIT, new StringToDateConverter() {
+		storageTable.setPageLength(15);
+		storageTable.addContainerProperty(lapi.getText(LapiKeynames.INFO),
+				Label.class, null);
+		storageTable.addContainerProperty(lapi.getText(LapiKeynames.NAME),
+				String.class, null);
+		storageTable.addContainerProperty(lapi.getText(LapiKeynames.AMOUNT),
+				Integer.class, null);
+		storageTable.addContainerProperty(lapi.getText(LapiKeynames.UNIT),
+				String.class, null);
+		String text = " " + lapi.getText(LapiKeynames.EXPIRE_DATE);
+		storageTable.addContainerProperty(text, Date.class, null);
+		storageTable.setColumnIcon(text, FontAwesome.CALENDAR);
+		storageTable.setConverter(text, new StringToDateConverter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public DateFormat getFormat(Locale locale) {
-				return new SimpleDateFormat("dd-MM-yyyy");
+				return new SimpleDateFormat(lapi
+						.getText(LapiKeynames.DATE_FORMAT));
 			}
 
 		});
 
+		storageTable.addContainerProperty(lapi.getText(LapiKeynames.EDIT),
+				Button.class, null);
 		setFoodInTable();
+
 		storageTable.setSizeFull();
-		storageTable.setPageLength(user.getUserStorage().size());
+		storageTable.setPageLength(signedUpUser.getUserStorage().size());
 		storageTable.setSelectable(true);
 		return storageTable;
 	}
 
 	private void setFoodInTable() {
 		storageTable.removeAllItems();
-		for (Food f : user.getUserStorage()) {
-			storageTable
-					.addItem(new Object[] { f.getName(), f.getAmount(),
-							f.getUnit().getUnitName(), f.getExipreDate() },
-							f.getCode());
+		for (Food food : signedUpUser.getUserStorage()) {
+
+			boolean expired = foodControle.isExpiredDateReached(food);
+			boolean expiredInAWeek = foodControle
+					.willBeExpiredDateReachedInAWeek(food);
+			Label symbol = null;
+			if (expired) {
+				symbol = new Label(FontAwesome.EXCLAMATION_TRIANGLE.getHtml(),
+						ContentMode.HTML);
+			} else if (expiredInAWeek) {
+				symbol = new Label(FontAwesome.INFO_CIRCLE.getHtml(),
+						ContentMode.HTML);
+			}
+			Button deleteButton = new Button(FontAwesome.TRASH);
+			deleteButton.setId(food.getCode());
+			deleteButton.addClickListener(e -> {
+				if (StringUtils.isNoneBlank(deleteButton.getId())) {
+					signedUpUser.setUserStorage(userControle
+							.deleteFoodInUserSorage(signedUpUser,
+									deleteButton.getId()));
+					setFoodInTable();
+					try {
+						userControle.saveUser(signedUpUser);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+
+			});
+			storageTable.addItem(
+					new Object[] { symbol, food.getName(), food.getAmount(),
+							food.getUnit().getUnitName(), food.getExpireDate(),
+							deleteButton }, food.getCode());
 		}
 	}
 
 	private HorizontalLayout generateSiteHeader() {
 		final HorizontalLayout kopfleiste = new HorizontalLayout();
 		kopfleiste.setSizeFull();
-
-		Label welcome = new Label("Hallo " + FontAwesome.USER.getHtml() + "("
-				+ user.getName() + ")");
+		Label welcome = new Label(lapi.getText(LapiKeynames.WELCOME) + " "
+				+ FontAwesome.USER.getHtml() + " (" + signedUpUser.getName()
+				+ ")");
 		welcome.setContentMode(ContentMode.HTML);
-		Button signOutButton = new Button("Logout", FontAwesome.SIGN_OUT);
+		Button signOutButton = new Button(lapi.getText(LapiKeynames.LOGOUT),
+				FontAwesome.SIGN_OUT);
 		signOutButton.addClickListener(e -> {
 			try {
 				if (window != null) {
 					window.close();
 				}
-				updateUserInDatabase();
-				UI.getCurrent().getSession().setAttribute(User.class, null);
-				UI.getCurrent().getNavigator()
-						.navigateTo(KnownView.LOGIN.getName());
-				Notification.show("Aufwiedersehen " + user.getName() + "!",
-						Notification.Type.TRAY_NOTIFICATION);
+				userControle.saveUser(signedUpUser);
+				UserControle.setCurrentUser(null);
+				ViewKeynames.gotoView(ViewKeynames.LOGIN);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -202,10 +222,6 @@ public class MainView extends VerticalLayout implements View {
 
 		kopfleiste.setComponentAlignment(signOutButton, Alignment.MIDDLE_RIGHT);
 		return kopfleiste;
-	}
-
-	private Collection<? extends Food> getUserStorage() {
-		return user.getUserStorage();
 	}
 
 }

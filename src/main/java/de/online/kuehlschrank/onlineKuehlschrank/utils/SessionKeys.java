@@ -1,10 +1,11 @@
 package de.online.kuehlschrank.onlineKuehlschrank.utils;
 
-public enum KnownView {
-	LOGIN("login"), MAIN("main"), REGISTRATION("registration");
+public enum SessionKeys {
+	SIGNED_IN_USER("signedInUser");
+	
 	private String name;
 
-	private KnownView(String name) {
+	private SessionKeys(String name) {
 		this.name = name;
 	}
 

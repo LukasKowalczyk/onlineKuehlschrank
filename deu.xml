@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<texts>
+	<textElement>
+		<id>info</id>
+		<text>Info</text>
+	</textElement>
+	<textElement>
+		<id>dateformat.intext</id>
+		<text>TT.MM.JJJJ</text>
+	</textElement>
+	<textElement>
+		<id>database.notfound</id>
+		<text>Es wurde nichts gefunden!</text>
+	</textElement>
+	<textElement>
+		<id>amount</id>
+		<text>Anzahl</text>
+	</textElement>
+	<textElement>
+		<id>code</id>
+		<text>EAN</text>
+	</textElement>
+	<textElement>
+		<id>food</id>
+		<text>Lebensmittel</text>
+	</textElement>
+	<textElement>
+		<id>edit</id>
+		<text>Bearbeiten</text>
+	</textElement>
+	<textElement>
+		<id>name</id>
+		<text>Name</text>
+	</textElement>
+	<textElement>
+		<id>username</id>
+		<text>Username</text>
+	</textElement>
+	<textElement>
+		<id>usernameInUse</id>
+		<text>Der Username ist schon in Verwendung!</text>
+	</textElement>
+	<textElement>
+		<id>emailInUse</id>
+		<text>Die Email ist schon in Verwendung!</text>
+	</textElement>
+	<textElement>
+		<id>unit</id>
+		<text>Einheit</text>
+	</textElement>
+	<textElement>
+		<id>expireDate</id>
+		<text>Min. Haltbarkeit</text>
+	</textElement>
+	<textElement>
+		<id>add</id>
+		<text>Hinzufügen</text>
+	</textElement>
+	<textElement>
+		<id>save</id>
+		<text>Speichern</text>
+	</textElement>
+	<textElement>
+		<id>email</id>
+		<text>Email</text>
+	</textElement>
+	<textElement>
+		<id>emailConfirm</id>
+		<text>Email bestätigen</text>
+	</textElement>
+	<textElement>
+		<id>password</id>
+		<text>Passwort</text>
+	</textElement>
+	<textElement>
+		<id>passwordConfirm</id>
+		<text>Passwort bestätigen</text>
+	</textElement>
+	<textElement>
+		<id>loginButton</id>
+		<text>Anmelden</text>
+	</textElement>
+	<textElement>
+		<id>signUpButton</id>
+		<text>Registrieren</text>
+	</textElement>
+	<textElement>
+		<id>EmailValidator</id>
+		<text>Deine Email ist nicht richtig!</text>
+	</textElement>
+	<textElement>
+		<id>EanValidator</id>
+		<text>Bitte gib eine EAN ein!</text>
+	</textElement>
+	<textElement>
+		<id>UsernameValidator</id>
+		<text>Dein Username enthält ' ' ! ? @ # + ( ) § $ &amp; &quot; % * ~ '
+			: ; </text>
+	</textElement>
+	<textElement>
+		<id>PasswordValidator</id>
+		<text>Das Passwort muss mindestens 7 Zeichen lang sein, Ein
+			Großbuchstaben, Eine Ziffer oder ein Sonderzeichen</text>
+	</textElement>
+	<textElement>
+		<id>NumberValidator</id>
+		<text>Bitte gib eine Zahl ein!</text>
+	</textElement>
+	<textElement>
+		<id>email.RequiredError</id>
+		<text>Bitte gib deine Email ein!</text>
+	</textElement>
+	<textElement>
+		<id>password.RequiredError</id>
+		<text>Bitte gib dein Passwort ein!</text>
+	</textElement>
+	<textElement>
+		<id>error.titel</id>
+		<text>Fehler</text>
+	</textElement>
+	<textElement>
+		<id>login.error.message</id>
+		<text>Email oder Passwort ist falsch</text>
+	</textElement>
+	<textElement>
+		<id>signup.error.message</id>
+		<text>Ihre Eingabe sind nicht komplett</text>
+	</textElement>
+	<textElement>
+		<id>storageTable.titel</id>
+		<text>Voratskammer</text>
+	</textElement>
+	<textElement>
+		<id>window.update</id>
+		<text>Lebensmittel bearbeiten</text>
+	</textElement>
+	<textElement>
+		<id>window.new</id>
+		<text>Lebensmittel hinzufügen</text>
+	</textElement>
+	<textElement>
+		<id>welcome</id>
+		<text>Hallo</text>
+	</textElement>
+	<textElement>
+		<id>logout</id>
+		<text>Abmelden</text>
+	</textElement>
+	<textElement>
+		<id>dateFormat</id>
+		<text>dd.MM.yyyy</text>
+	</textElement>
+	<textElement>
+		<id>date.error</id>
+		<text>Das Datum muss gleich oder später sein als das aktuelle Datum
+		</text>
+	</textElement>
+</texts>

@@ -1,4 +1,4 @@
-package de.online.kuehlschrank.onlineKuehlschrank.utils;
+package de.online.kuehlschrank.onlineKuehlschrank.validation;
 
 import com.vaadin.data.validator.RegexpValidator;
 

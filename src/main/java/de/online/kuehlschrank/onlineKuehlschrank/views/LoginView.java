@@ -10,16 +10,18 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import de.lapi.Lapi;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.LapiKeynames;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.ViewKeynames;
 
 public class LoginView extends VerticalLayout implements View {
 
+	private Lapi lapi;
 
 	/**
 	 * 
@@ -28,38 +30,37 @@ public class LoginView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		lapi = Lapi.getInstance();
 		final HorizontalLayout buttonlayout = new HorizontalLayout();
 
 		setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
 		final TextField email = new TextField();
-		email.addValidator(new EmailValidator("Deine Email ist nicht richtig!"));
-		email.setCaption("Email:");
+		email.addValidator(new EmailValidator(lapi
+				.getText(LapiKeynames.EMAIL_VALIDATOR)));
+		email.setCaption(lapi.getText(LapiKeynames.EMAIL));
 		email.setRequired(false);
-		email.setRequiredError("Bitte gib deine Email ein!");
+		email.setRequiredError(lapi.getText(LapiKeynames.EMAIL_REQUIRED_ERROR));
 
 		final PasswordField password = new PasswordField();
-		password.setCaption("Passwort:");
+		password.setCaption(lapi.getText(LapiKeynames.PASSWORD));
 		password.setRequired(false);
-		password.setRequiredError("Bitte gib dein Passwort ein!");
+		password.setRequiredError(lapi
+				.getText(LapiKeynames.PASSWORD_REQUIRED_ERROR));
 
-		Button loginButton = new Button("Login", FontAwesome.SIGN_IN);
+		Button loginButton = new Button(
+				lapi.getText(LapiKeynames.LOGIN_BUTTON), FontAwesome.SIGN_IN);
 		loginButton.addClickListener(e -> {
 
 			User user = new User(email.getValue(), password.getValue(), null);
 
-			UserControle userControle = UserControle.getInstance();
 			try {
-				user = userControle.checkLogin(user);
-				UI.getCurrent().getSession().setAttribute(User.class, user);
-				UI.getCurrent().getNavigator()
-						.navigateTo(KnownView.MAIN.getName());
-				Notification.show("Danke " + user.getName()
-						+ "! Dein Passwort ist >" + user.getPassword() + "<",
-						Notification.Type.TRAY_NOTIFICATION);
-
+				user = UserControle.getInstance().checkLogin(user);
+				UserControle.setCurrentUser(user);
+				ViewKeynames.gotoView(ViewKeynames.MAIN);
 			} catch (LoginException e1) {
-				Notification.show("Fehler", "Email oder Passwort ist falsch",
+				Notification.show(lapi.getText(LapiKeynames.ERROR_TITEL),
+						lapi.getText(LapiKeynames.LOGIN_ERROR_MESSAGE),
 						Notification.Type.ERROR_MESSAGE);
 				password.setRequired(true);
 				email.setRequired(true);
@@ -68,12 +69,11 @@ public class LoginView extends VerticalLayout implements View {
 			}
 
 		});
-		Button signUpButton = new Button("Registrieren", FontAwesome.USER_PLUS);
+		Button signUpButton = new Button(
+				lapi.getText(LapiKeynames.SIGN_UP_BUTTON),
+				FontAwesome.USER_PLUS);
 		signUpButton.addClickListener(e -> {
-			Notification.show("Vielen Dank für dein Interesse!",
-					Notification.Type.TRAY_NOTIFICATION);
-			UI.getCurrent().getNavigator()
-					.navigateTo(KnownView.REGISTRATION.getName());
+			ViewKeynames.gotoView(ViewKeynames.REGISTRATION);
 		});
 
 		buttonlayout.addComponents(loginButton, signUpButton);

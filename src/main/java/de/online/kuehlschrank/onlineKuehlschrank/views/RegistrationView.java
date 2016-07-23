@@ -1,7 +1,5 @@
 package de.online.kuehlschrank.onlineKuehlschrank.views;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -11,19 +9,22 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import de.lapi.Lapi;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.RegistrationException;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.PasswordValidator;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.UsernameValidator;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.LapiKeynames;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.ViewKeynames;
+import de.online.kuehlschrank.onlineKuehlschrank.validation.PasswordValidator;
+import de.online.kuehlschrank.onlineKuehlschrank.validation.UsernameValidator;
 
 public class RegistrationView extends VerticalLayout implements View {
 
+	private Lapi lapi;
 
+	private UserControle userControle;
 	/**
 	 * 
 	 */
@@ -31,95 +32,111 @@ public class RegistrationView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
+		lapi = Lapi.getInstance();
+		userControle = UserControle.getInstance();
 		setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		TextField email = new TextField();
-		email.addValidator(new EmailValidator("Deine Email ist nicht richtig!"));
-		email.setCaption("Email:");
+		email.addValidator(new EmailValidator(lapi
+				.getText(LapiKeynames.EMAIL_VALIDATOR)));
+		email.setCaption(lapi.getText(LapiKeynames.EMAIL));
 		email.setRequired(false);
-	
+
+		TextField emailConfirm = new TextField();
+		emailConfirm.addValidator(new EmailValidator(lapi
+				.getText(LapiKeynames.EMAIL_VALIDATOR)));
+		emailConfirm.setCaption(lapi.getText(LapiKeynames.EMAIL_CONFIRM));
+		emailConfirm.setRequired(false);
 
 		TextField username = new TextField();
-		username.addValidator(new UsernameValidator("Dein Username enthält ' ' ! ? @ # + ( ) § $ & \" % * ~ ' : ; "));
-		username.setCaption("Username:");
+		username.addValidator(new UsernameValidator(lapi
+				.getText(LapiKeynames.USERNAME_VALIDATOR)));
+		username.setCaption(lapi.getText(LapiKeynames.USERNAME));
 		username.setRequired(false);
 
 		PasswordField password = new PasswordField();
-		password.addValidator(new PasswordValidator("Das Passwort muss mindestens 7 Zeichen lang sein, Ein Großbuchstaben, Eine Ziffer oder ein Sonderzeichen"));
-		password.setCaption("Passwort:");
+		password.addValidator(new PasswordValidator(lapi
+				.getText(LapiKeynames.PASSWORD_VALIDATOR)));
+		password.setCaption(lapi.getText(LapiKeynames.PASSWORD));
 		password.setRequired(false);
-		password.setRequiredError("Bitte gib dein Passwort ein!");
+		password.setRequiredError(lapi
+				.getText(LapiKeynames.PASSWORD_REQUIRED_ERROR));
 
-		PasswordField passwordSecond = new PasswordField();
-		passwordSecond.setCaption("Passwort Wiederholung:");
-		passwordSecond.setRequired(false);
-		passwordSecond.setRequiredError("Bitte gib dein Passwort ein!");
+		PasswordField passwordConfirm = new PasswordField();
+		passwordConfirm.setCaption(lapi.getText(LapiKeynames.PASSWORD_CONFIRM));
+		passwordConfirm.setRequired(false);
+		passwordConfirm.setRequiredError(lapi
+				.getText(LapiKeynames.PASSWORD_REQUIRED_ERROR));
 
-		Button signUpButton = new Button("Registrieren", FontAwesome.USER_PLUS);
-		signUpButton.addClickListener(e -> {
-			Notification.show("Vielen Dank für dein Registrierung!",
-					Notification.Type.TRAY_NOTIFICATION);
-			if (validateTextFields(username, password, passwordSecond, email)) {
-				User user = new User(email.getValue(), passwordSecond
-						.getValue(), username.getValue());
-				if (UserControle.getInstance().checkUsername(user)) {
-					username.setRequired(true);
-					username.setRequiredError("Der Username >"
-							+ username.getValue() + "< ist schon vorhanden!");
-					username.setValue("");
-				} else if (UserControle.getInstance().checkEmail(user)) {
-					email.setRequired(true);
-					email.setRequiredError("Die Email >" + email.getValue()
-							+ "< ist schon vorhanden!");
-					email.setValue("");
-				} else {
-					try {
-						UserControle.getInstance().registration(user);
-						UI.getCurrent().getNavigator()
-								.navigateTo(KnownView.LOGIN.getName());
-						Notification.show("Danke!",
-								"Vielen Dank für deine Registrierung!",
-								Notification.Type.HUMANIZED_MESSAGE);
+		Button signUpButton = new Button(
+				lapi.getText(LapiKeynames.SIGN_UP_BUTTON),
+				FontAwesome.USER_PLUS);
+		signUpButton
+				.addClickListener(e -> {
+					if (validateTextFields(username, password, passwordConfirm,
+							email, emailConfirm)) {
+						User user = new User(email.getValue(), passwordConfirm
+								.getValue(), username.getValue());
 
-					} catch (RegistrationException e1) {
+						if (userControle.checkUsername(user)) {
+							username.setRequired(true);
+							username.setRequiredError(lapi
+									.getText(LapiKeynames.USERNAME_IN_USE));
+							username.setValue("");
+						} else if (userControle.checkEmail(user)) {
+							email.setRequired(true);
+							email.setRequiredError(lapi
+									.getText(LapiKeynames.EMAIL_IN_USE));
+							email.setValue("");
+						} else {
+							try {
+								userControle.registration(user);
+								ViewKeynames.gotoView(ViewKeynames.LOGIN);
+							} catch (RegistrationException e1) {
+								password.setValue("");
+								passwordConfirm.setValue("");
+								Notification.show(
+										lapi.getText(LapiKeynames.ERROR_TITEL),
+										lapi.getText(LapiKeynames.SIGNUP_ERROR_MESSAGE),
+										Notification.Type.ERROR_MESSAGE);
+							}
+						}
+					} else {
 						password.setValue("");
-						passwordSecond.setValue("");
-						Notification.show("Fehler",
-								"Ihre Eingabe sind nicht komplett",
+						passwordConfirm.setValue("");
+						Notification.show(
+								lapi.getText(LapiKeynames.ERROR_TITEL),
+								lapi.getText(LapiKeynames.SIGNUP_ERROR_MESSAGE),
 								Notification.Type.ERROR_MESSAGE);
 					}
-				}
-			} else {
-				password.setValue("");
-				passwordSecond.setValue("");
-				Notification.show("Fehler", "Ihre Eingabe sind nicht komplett",
-						Notification.Type.ERROR_MESSAGE);
-			}
 
-		});
+				});
 
-		addComponents(email, username, password, passwordSecond, signUpButton);
+		addComponents(username, email, emailConfirm, password, passwordConfirm,
+				signUpButton);
 		setMargin(true);
 		setSpacing(true);
 	}
 
 	private boolean validateTextFields(TextField username,
-			PasswordField password, PasswordField passwordSecond,
-			TextField email) {
-		if (StringUtils.isBlank(email.getValue())) {
+			PasswordField password, PasswordField passwordConfirm,
+			TextField email, TextField emailConfirm) {
+		if (!userControle.validateSignUpEmail(email.getValue(),
+				emailConfirm.getValue())) {
+			emailConfirm.setRequired(true);
 			email.setRequired(true);
-			email.setRequiredError("Bitte gib deine Email ein!");
+			email.setRequiredError(lapi
+					.getText(LapiKeynames.EMAIL_REQUIRED_ERROR));
+			emailConfirm.setRequiredError(lapi
+					.getText(LapiKeynames.EMAIL_REQUIRED_ERROR));
 			return false;
 		}
-		if (StringUtils.isBlank(username.getValue())) {
+		if (!userControle.validateSignUpUsername(username.getValue())) {
 			username.setRequired(true);
 			return false;
 		}
-		if (StringUtils.isBlank(passwordSecond.getValue())
-				|| StringUtils.isBlank(password.getValue())
-				|| !StringUtils.equals(passwordSecond.getValue(),
-						password.getValue())) {
-			passwordSecond.setRequired(true);
+		if (!userControle.validateSignUpPassword(password.getValue(),
+				passwordConfirm.getValue())) {
+			passwordConfirm.setRequired(true);
 			password.setRequired(true);
 			return false;
 		}

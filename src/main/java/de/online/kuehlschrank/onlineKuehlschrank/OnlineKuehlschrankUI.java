@@ -6,16 +6,13 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 
-import de.online.kuehlschrank.onlineKuehlschrank.container.User;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.KnownView;
-import de.online.kuehlschrank.onlineKuehlschrank.views.LoginView;
-import de.online.kuehlschrank.onlineKuehlschrank.views.MainView;
-import de.online.kuehlschrank.onlineKuehlschrank.views.RegistrationView;
+import de.lapi.Lapi;
+import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
+import de.online.kuehlschrank.onlineKuehlschrank.utils.ViewKeynames;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -31,23 +28,16 @@ import de.online.kuehlschrank.onlineKuehlschrank.views.RegistrationView;
 @Title("Online Kühlschrank")
 public class OnlineKuehlschrankUI extends UI {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1828699832482058166L;
 
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
-		User user = UI.getCurrent().getSession().getAttribute(User.class);
-		Navigator navi = new Navigator(this, this);
-		navi.addView(KnownView.LOGIN.getName(), LoginView.class);
-		navi.addView(KnownView.MAIN.getName(), MainView.class);
-		navi.addView(KnownView.REGISTRATION.getName(), RegistrationView.class);
-		if (user == null) {
-			UI.getCurrent().getNavigator()
-					.navigateTo(KnownView.LOGIN.getName());
+		Lapi.setQuellOrdner("D:\\Entwickelung\\Workspace\\Online Kuehlschrank\\onlineKuehlschrank\\");
+		ViewKeynames.generarteNavigator(this, this);
+		if (UserControle.getCurrentUser() == null) {
+			ViewKeynames.gotoView(ViewKeynames.LOGIN);
 		} else {
-			UI.getCurrent().getNavigator().navigateTo(KnownView.MAIN.getName());
+			ViewKeynames.gotoView(ViewKeynames.MAIN);
 		}
 
 	}
@@ -56,9 +46,6 @@ public class OnlineKuehlschrankUI extends UI {
 	@VaadinServletConfiguration(ui = OnlineKuehlschrankUI.class, productionMode = false)
 	public static class OnlineKuehlschrankUIServlet extends VaadinServlet {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 5691173458192625910L;
 	}
 

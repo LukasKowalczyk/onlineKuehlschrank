@@ -71,7 +71,7 @@ public class Food implements Serializable {
 		this.code = code;
 	}
 
-	public Date getExipreDate() {
+	public Date getExpireDate() {
 		return exipreDate;
 	}
 

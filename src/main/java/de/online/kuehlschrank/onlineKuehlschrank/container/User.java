@@ -70,18 +70,6 @@ public class User implements Serializable {
 		this.userStorage = userStorage;
 	}
 
-	public void deleteFoodInUserStorage(String code) {
-		Food selectedFood = null;
-		for (Food food : userStorage) {
-			if (food.getCode().equals(code)) {
-				selectedFood = food;
-				break;
-			}
-		}
-		if (selectedFood != null) {
-			userStorage.remove(selectedFood);
-		}
-	}
 
 	public void addFood(Food food) {
 		userStorage.add(food);
