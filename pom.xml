@@ -52,6 +52,7 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<!--START own dependencys-->
 		<dependency>
     		<groupId>com.github.LukasKowalczyk</groupId>
     		<artifactId>lapi</artifactId>
@@ -60,25 +61,24 @@
 		<dependency>
     		<groupId>com.github.LukasKowalczyk</groupId>
     		<artifactId>hongo</artifactId>
-    		<version>s0.5</version>
+    		<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.3</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.2.2</version>
 		</dependency>
+		<!--END own dependencys-->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>

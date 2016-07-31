@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,11 +27,12 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.lapi.Lapi;
 import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
+import de.online.kuehlschrank.onlineKuehlschrank.container.StorageFood;
+import de.online.kuehlschrank.onlineKuehlschrank.container.Units;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.FoodControle;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.LapiKeynames;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.Units;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.ViewKeynames;
 
 public class MainView extends VerticalLayout implements View {
@@ -67,7 +70,7 @@ public class MainView extends VerticalLayout implements View {
 			public void itemClick(ItemClickEvent event) {
 				selectedId = event.getItemId().toString();
 				if (event.isDoubleClick()) {
-					Food f = getFoodFromTable();
+					StorageFood f = getFoodFromTable();
 					generateFoodWindow(f,
 							lapi.getText(LapiKeynames.WINDOW_UPDATE));
 					storageTable.select(null);
@@ -75,32 +78,35 @@ public class MainView extends VerticalLayout implements View {
 				}
 			}
 
-			private Food getFoodFromTable() {
+			private StorageFood getFoodFromTable() {
 				Item i = storageTable.getItem(selectedId);
-				Food food = new Food();
+				StorageFood storageFood = new StorageFood();
+				storageFood.setFood(new Food());
 				if (StringUtils.isNoneBlank(selectedId)) {
-					food.setCode(selectedId);
+					String ean = StringUtils.substringBefore(selectedId, "_");
+
+					storageFood.getFood().setCode(ean);
 					for (Object o : i.getItemPropertyIds()) {
 						if (o.toString()
 								.equals(lapi.getText(LapiKeynames.NAME))) {
-							food.setName((String) i.getItemProperty(o)
+							storageFood.getFood().setName((String) i.getItemProperty(o)
 									.getValue());
 						} else if (o.toString().equals(
 								lapi.getText(LapiKeynames.AMOUNT))) {
-							food.setAmount((int) i.getItemProperty(o)
+							storageFood.setAmount((int) i.getItemProperty(o)
 									.getValue());
 						} else if (o.toString().equals(
 								lapi.getText(LapiKeynames.UNIT))) {
-							food.setUnit(Units.getUnit((String) i
+							storageFood.setUnit(Units.getUnit((String) i
 									.getItemProperty(o).getValue()));
 						} else if (o.toString().equals(
 								lapi.getText(LapiKeynames.EXPIRE_DATE))) {
-							food.setExipreDate((Date) i.getItemProperty(o)
-									.getValue());
+							storageFood.setExpireDate((Date) i.getItemProperty(
+									o).getValue());
 						}
 					}
 				}
-				return food;
+				return storageFood;
 			}
 
 		});
@@ -116,8 +122,8 @@ public class MainView extends VerticalLayout implements View {
 
 	}
 
-	private static void generateFoodWindow(Food f, String títel) {
-		window = new EditFoodOfUserStorageWindow(títel, f);
+	private static void generateFoodWindow(StorageFood f, String titel) {
+		window = new EditFoodOfUserStorageWindow(titel, f);
 		if (!window.isAttached()) {
 			UI.getCurrent().addWindow(window);
 		}
@@ -159,11 +165,17 @@ public class MainView extends VerticalLayout implements View {
 
 	private void setFoodInTable() {
 		storageTable.removeAllItems();
-		for (Food food : signedUpUser.getUserStorage()) {
+		Map<String, StorageFood> userStorage = signedUpUser.getUserStorage();
+		if (userStorage == null) {
+			return;
+		}
+		for (Entry<String, StorageFood> entry : userStorage.entrySet()) {
 
-			boolean expired = foodControle.isExpiredDateReached(food);
+			StorageFood storageFood = entry.getValue();
+			String id = entry.getKey();
+			boolean expired = foodControle.isExpiredDateReached(storageFood);
 			boolean expiredInAWeek = foodControle
-					.willBeExpiredDateReachedInAWeek(food);
+					.willBeExpiredDateReachedInAWeek(storageFood);
 			Label symbol = null;
 			if (expired) {
 				symbol = new Label(FontAwesome.EXCLAMATION_TRIANGLE.getHtml(),
@@ -173,7 +185,8 @@ public class MainView extends VerticalLayout implements View {
 						ContentMode.HTML);
 			}
 			Button deleteButton = new Button(FontAwesome.TRASH);
-			deleteButton.setId(food.getCode());
+
+			deleteButton.setId(id);
 			deleteButton.addClickListener(e -> {
 				if (StringUtils.isNoneBlank(deleteButton.getId())) {
 					signedUpUser.setUserStorage(userControle
@@ -188,10 +201,12 @@ public class MainView extends VerticalLayout implements View {
 				}
 
 			});
+
 			storageTable.addItem(
-					new Object[] { symbol, food.getName(), food.getAmount(),
-							food.getUnit().getUnitName(), food.getExpireDate(),
-							deleteButton }, food.getCode());
+					new Object[] { symbol, storageFood.getFood().getName(),
+							storageFood.getAmount(),
+							storageFood.getUnit().getUnitName(),
+							storageFood.getExpireDate(), deleteButton }, id);
 		}
 	}
 

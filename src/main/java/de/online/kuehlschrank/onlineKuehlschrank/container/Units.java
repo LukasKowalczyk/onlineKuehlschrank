@@ -1,4 +1,4 @@
-package de.online.kuehlschrank.onlineKuehlschrank.utils;
+package de.online.kuehlschrank.onlineKuehlschrank.container;
 
 public enum Units {
 	GRAMM("g"), KILOGRAMM("kg"), MILLILITER("ml"), LITER("l"), PIECE("Stk");

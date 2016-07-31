@@ -1,6 +1,7 @@
 package de.online.kuehlschrank.onlineKuehlschrank.controle;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,6 +9,7 @@ import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.UI;
 
 import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
+import de.online.kuehlschrank.onlineKuehlschrank.container.StorageFood;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.LoginException;
@@ -111,17 +113,17 @@ public class UserControle {
 				&& StringUtils.equals(passwordConfirm, password);
 	}
 
-	public List<Food> deleteFoodInUserSorage(User user, String code) {
-		List<Food> userStorage = user.getUserStorage();
-		Food selectedFood = null;
-		for (Food food : userStorage) {
-			if (food.getCode().equals(code)) {
-				selectedFood = food;
+	public Map<String, StorageFood> deleteFoodInUserSorage(User user, String id) {
+		Map<String, StorageFood> userStorage = user.getUserStorage();
+		StorageFood selectedFood = null;
+		for (Entry<String, StorageFood> food : userStorage.entrySet()) {
+			if (food.getKey().equals(id)) {
+				selectedFood = food.getValue();
 				break;
 			}
 		}
 		if (selectedFood != null) {
-			userStorage.remove(selectedFood);
+			userStorage.remove(id);
 		}
 		return userStorage;
 	}
@@ -130,10 +132,10 @@ public class UserControle {
 		datenbankControle.updateInCollection(user);
 	}
 
-	public void insertFoodInUserstorage(User user, Food food) throws Exception {
-		user.addFood(food);
+	public void insertFoodInUserstorage(User user, StorageFood storageFood) throws Exception {
+		user.addFood(storageFood);
 		saveUser(user);
-		inserFood(food);
+		inserFood(storageFood);
 	}
 
 	public static User getCurrentUser() {
@@ -144,17 +146,17 @@ public class UserControle {
 		UI.getCurrent().getSession().setAttribute(User.class, user);
 	}
 
-	public void updateFoodInUserstorage(User user, Food food, String code)
+	public void updateFoodInUserstorage(User user, StorageFood storageFood, String code)
 			throws Exception {
 		user.setUserStorage(deleteFoodInUserSorage(user, code));
-		user.addFood(food);
+		user.addFood(storageFood);
 		saveUser(user);
-		inserFood(food);
+		inserFood(storageFood);
 	}
 
-	private void inserFood(Food food) throws Exception {
-		if (!foodControle.isKnownFood(food)) {
-			foodControle.addNewFood(food);
+	private void inserFood(StorageFood storageFood) throws Exception {
+		if (!foodControle.isKnownFood(storageFood.getFood())) {
+			foodControle.addNewFood(storageFood.getFood());
 		}
 	}
 

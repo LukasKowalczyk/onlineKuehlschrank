@@ -8,6 +8,7 @@ import java.util.List;
 
 import de.lapi.Lapi;
 import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
+import de.online.kuehlschrank.onlineKuehlschrank.container.StorageFood;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.LapiKeynames;
 
@@ -41,11 +42,11 @@ public class FoodControle {
 		return foodControle;
 	}
 
-	public boolean isExpiredDateReached(Food food) {
-		if (food.getExpireDate() == null) {
+	public boolean isExpiredDateReached(StorageFood storageFood) {
+		if (storageFood.getExpireDate() == null) {
 			return false;
 		}
-		String tableDate = sdf.format(food.getExpireDate());
+		String tableDate = sdf.format(storageFood.getExpireDate());
 		try {
 			return sdf.parse(tableDate).before(new Date());
 		} catch (ParseException e) {
@@ -53,11 +54,11 @@ public class FoodControle {
 		}
 	}
 
-	public boolean willBeExpiredDateReachedInAWeek(Food food) {
+	public boolean willBeExpiredDateReachedInAWeek(StorageFood storageFood) {
 		SimpleDateFormat sdf = new SimpleDateFormat(
 				lapi.getText(LapiKeynames.DATE_FORMAT));
 		try {
-			Date exipreDate = food.getExpireDate();
+			Date exipreDate = storageFood.getExpireDate();
 			if (exipreDate != null) {
 				Date aktDate = sdf.parse(sdf.format(new Date()));
 				Date expireDate = sdf.parse(sdf.format(exipreDate));
@@ -127,10 +128,9 @@ public class FoodControle {
 	}
 
 	public void saveFood(Food food) throws Exception {
-		Food toSave = food;
-		toSave.setAmount(0);
-		toSave.setUnit(null);
-		toSave.setExipreDate(null);
+		Food toSave = new Food();
+		toSave.setCode(food.getCode());
+		toSave.setName(food.getName());
 		databaseControle.updateInCollection(toSave);
 	}
 
@@ -138,9 +138,6 @@ public class FoodControle {
 		Food toSave = new Food();
 		toSave.setCode(food.getCode());
 		toSave.setName(food.getName());
-		toSave.setAmount(0);
-		toSave.setUnit(null);
-		toSave.setExipreDate(null);
 		databaseControle.insertToCollection(toSave);
 	}
 }

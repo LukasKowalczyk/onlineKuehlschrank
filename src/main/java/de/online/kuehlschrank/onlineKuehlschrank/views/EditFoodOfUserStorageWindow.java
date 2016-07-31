@@ -21,12 +21,13 @@ import com.vaadin.ui.Window;
 
 import de.lapi.Lapi;
 import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
+import de.online.kuehlschrank.onlineKuehlschrank.container.StorageFood;
+import de.online.kuehlschrank.onlineKuehlschrank.container.Units;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.FoodControle;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.LapiKeynames;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.SuggestionForTextField;
-import de.online.kuehlschrank.onlineKuehlschrank.utils.Units;
 import de.online.kuehlschrank.onlineKuehlschrank.utils.ViewKeynames;
 import de.online.kuehlschrank.onlineKuehlschrank.validation.DateValidator;
 import de.online.kuehlschrank.onlineKuehlschrank.validation.EanValidator;
@@ -34,7 +35,7 @@ import de.online.kuehlschrank.onlineKuehlschrank.validation.NumberValidator;
 
 public class EditFoodOfUserStorageWindow extends Window {
 
-	private Food selectedFood = null;
+	private StorageFood selectedFood = null;
 
 	private UserControle userControle;
 
@@ -52,20 +53,20 @@ public class EditFoodOfUserStorageWindow extends Window {
 		initWindow();
 	}
 
-	public EditFoodOfUserStorageWindow(Food selectedFood) {
+	public EditFoodOfUserStorageWindow(StorageFood selectedFood) {
 		super();
 		this.selectedFood = selectedFood;
 		initWindow();
 	}
 
 	public EditFoodOfUserStorageWindow(String caption, Component content,
-			Food selectedFood) {
+			StorageFood selectedFood) {
 		super(caption, content);
 		this.selectedFood = selectedFood;
 		initWindow();
 	}
 
-	public EditFoodOfUserStorageWindow(String caption, Food selectedFood) {
+	public EditFoodOfUserStorageWindow(String caption, StorageFood selectedFood) {
 		super(caption);
 		this.selectedFood = selectedFood;
 		initWindow();
@@ -166,8 +167,8 @@ public class EditFoodOfUserStorageWindow extends Window {
 		String caption = lapi.getText(LapiKeynames.ADD);
 		if (isUpdate) {
 			caption = lapi.getText(LapiKeynames.SAVE);
-			name.setValue(selectedFood.getName());
-			code.setValue(selectedFood.getCode());
+			name.setValue(selectedFood.getFood().getName());
+			code.setValue(selectedFood.getFood().getCode());
 			amount.setValue(String.valueOf(selectedFood.getAmount()));
 			expireDate.setValue(selectedFood.getExpireDate());
 			unit.select(selectedFood.getUnit());
@@ -176,14 +177,14 @@ public class EditFoodOfUserStorageWindow extends Window {
 		final Button addButton = new Button(caption);
 		addButton.addClickListener(e -> {
 			try {
-				Food food = new Food(name.getValue(), Integer.parseInt(amount
+				StorageFood food = new StorageFood(new Food(name.getValue(),code.getValue()), Integer.parseInt(amount
 						.getValue()), Units.getUnit(unit.getConvertedValue()
-						.toString()), code.getValue(), expireDate.getValue());
+						.toString()),  expireDate.getValue());
 
 				User user = UserControle.getCurrentUser();
 				if (isUpdate) {
 					userControle.updateFoodInUserstorage(user, food,
-							selectedFood.getCode());
+							selectedFood.getFood().getCode());
 				} else {
 					userControle.insertFoodInUserstorage(user, food);
 				}
