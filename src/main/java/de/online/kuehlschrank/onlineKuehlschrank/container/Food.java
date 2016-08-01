@@ -1,9 +1,6 @@
 package de.online.kuehlschrank.onlineKuehlschrank.container;
 
 import java.io.Serializable;
-import java.util.Date;
-
-import org.bson.types.ObjectId;
 
 import de.hongo.annotation.MongoCollectionInformation;
 import de.hongo.annotation.MongoUpdateKey;

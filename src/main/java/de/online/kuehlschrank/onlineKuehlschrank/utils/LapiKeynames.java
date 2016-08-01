@@ -3,7 +3,7 @@ package de.online.kuehlschrank.onlineKuehlschrank.utils;
 public interface LapiKeynames {
 
 	public static final String DATE_FORMAT_IN_TEXT = "dateformat.intext";
-	
+
 	public static final String DATABASE_NOT_FOUND = "database.notfound";
 
 	public static final String DATE_ERROR = "date.error";
@@ -77,4 +77,8 @@ public interface LapiKeynames {
 	public static final String EDIT = "edit";
 
 	public static final String FOOD = "food";
+
+	public static final String FAVORIT = "favorit";
+
+	public static final String CANCEL = "cancel";
 }

@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -26,9 +25,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.lapi.Lapi;
-import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 import de.online.kuehlschrank.onlineKuehlschrank.container.StorageFood;
-import de.online.kuehlschrank.onlineKuehlschrank.container.Units;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.FoodControle;
 import de.online.kuehlschrank.onlineKuehlschrank.controle.UserControle;
@@ -79,31 +76,12 @@ public class MainView extends VerticalLayout implements View {
 			}
 
 			private StorageFood getFoodFromTable() {
-				Item i = storageTable.getItem(selectedId);
 				StorageFood storageFood = new StorageFood();
-				storageFood.setFood(new Food());
 				if (StringUtils.isNoneBlank(selectedId)) {
-					String ean = StringUtils.substringBefore(selectedId, "_");
-
-					storageFood.getFood().setCode(ean);
-					for (Object o : i.getItemPropertyIds()) {
-						if (o.toString()
-								.equals(lapi.getText(LapiKeynames.NAME))) {
-							storageFood.getFood().setName((String) i.getItemProperty(o)
-									.getValue());
-						} else if (o.toString().equals(
-								lapi.getText(LapiKeynames.AMOUNT))) {
-							storageFood.setAmount((int) i.getItemProperty(o)
-									.getValue());
-						} else if (o.toString().equals(
-								lapi.getText(LapiKeynames.UNIT))) {
-							storageFood.setUnit(Units.getUnit((String) i
-									.getItemProperty(o).getValue()));
-						} else if (o.toString().equals(
-								lapi.getText(LapiKeynames.EXPIRE_DATE))) {
-							storageFood.setExpireDate((Date) i.getItemProperty(
-									o).getValue());
-						}
+					try {
+						storageFood = userControle.getFoodOfStorage(signedUpUser,
+								selectedId);
+					} catch (Exception e) {
 					}
 				}
 				return storageFood;
@@ -132,7 +110,7 @@ public class MainView extends VerticalLayout implements View {
 	private Table generateTable() {
 		storageTable.setPageLength(15);
 		storageTable.addContainerProperty(lapi.getText(LapiKeynames.INFO),
-				Label.class, null);
+				HorizontalLayout.class, null);
 		storageTable.addContainerProperty(lapi.getText(LapiKeynames.NAME),
 				String.class, null);
 		storageTable.addContainerProperty(lapi.getText(LapiKeynames.AMOUNT),
@@ -173,17 +151,7 @@ public class MainView extends VerticalLayout implements View {
 
 			StorageFood storageFood = entry.getValue();
 			String id = entry.getKey();
-			boolean expired = foodControle.isExpiredDateReached(storageFood);
-			boolean expiredInAWeek = foodControle
-					.willBeExpiredDateReachedInAWeek(storageFood);
-			Label symbol = null;
-			if (expired) {
-				symbol = new Label(FontAwesome.EXCLAMATION_TRIANGLE.getHtml(),
-						ContentMode.HTML);
-			} else if (expiredInAWeek) {
-				symbol = new Label(FontAwesome.INFO_CIRCLE.getHtml(),
-						ContentMode.HTML);
-			}
+			final HorizontalLayout symbols = getSymbols(storageFood);
 			Button deleteButton = new Button(FontAwesome.TRASH);
 
 			deleteButton.setId(id);
@@ -203,11 +171,31 @@ public class MainView extends VerticalLayout implements View {
 			});
 
 			storageTable.addItem(
-					new Object[] { symbol, storageFood.getFood().getName(),
+					new Object[] { symbols, storageFood.getFood().getName(),
 							storageFood.getAmount(),
 							storageFood.getUnit().getUnitName(),
 							storageFood.getExpireDate(), deleteButton }, id);
 		}
+	}
+
+	private HorizontalLayout getSymbols(StorageFood storageFood) {
+		boolean expired = foodControle.isExpiredDateReached(storageFood);
+		boolean expiredInAWeek = foodControle
+				.willBeExpiredDateReachedInAWeek(storageFood);
+		final HorizontalLayout symbols = new HorizontalLayout();
+		symbols.setSizeFull();
+		Label expiredSymbol = new Label();
+		if (expired) {
+			expiredSymbol = new Label(
+					FontAwesome.EXCLAMATION_TRIANGLE.getHtml(),
+					ContentMode.HTML);
+		} else if (expiredInAWeek) {
+			expiredSymbol = new Label(FontAwesome.INFO_CIRCLE.getHtml(),
+					ContentMode.HTML);
+		}
+		symbols.addComponents(expiredSymbol);
+		symbols.setComponentAlignment(expiredSymbol, Alignment.TOP_CENTER);
+		return symbols;
 	}
 
 	private HorizontalLayout generateSiteHeader() {

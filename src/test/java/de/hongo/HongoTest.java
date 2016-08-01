@@ -3,7 +3,7 @@
  */
 package de.hongo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 

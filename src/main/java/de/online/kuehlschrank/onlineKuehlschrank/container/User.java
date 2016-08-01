@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 
 import de.hongo.annotation.MongoCollectionInformation;
 import de.hongo.annotation.MongoUpdateKey;

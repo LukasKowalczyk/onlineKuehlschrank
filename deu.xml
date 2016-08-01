@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <texts>
 	<textElement>
+		<id>cancel</id>
+		<text>Abbrechen</text>
+	</textElement>
+	<textElement>
+		<id>favorit</id>
+		<text>Favorit</text>
+	</textElement>
+	<textElement>
 		<id>info</id>
 		<text>Info</text>
 	</textElement>
@@ -95,12 +103,14 @@
 	<textElement>
 		<id>UsernameValidator</id>
 		<text>Dein Username enthält ' ' ! ? @ # + ( ) § $ &amp; &quot; % * ~ '
-			: ; </text>
+			: ;
+		</text>
 	</textElement>
 	<textElement>
 		<id>PasswordValidator</id>
 		<text>Das Passwort muss mindestens 7 Zeichen lang sein, Ein
-			Großbuchstaben, Eine Ziffer oder ein Sonderzeichen</text>
+			Großbuchstaben, Eine Ziffer oder ein Sonderzeichen
+		</text>
 	</textElement>
 	<textElement>
 		<id>NumberValidator</id>

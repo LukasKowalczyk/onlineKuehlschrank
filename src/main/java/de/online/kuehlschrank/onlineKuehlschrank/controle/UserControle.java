@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.UI;
 
-import de.online.kuehlschrank.onlineKuehlschrank.container.Food;
 import de.online.kuehlschrank.onlineKuehlschrank.container.StorageFood;
 import de.online.kuehlschrank.onlineKuehlschrank.container.User;
 import de.online.kuehlschrank.onlineKuehlschrank.exceptions.DatenbankException;
@@ -132,7 +131,8 @@ public class UserControle {
 		datenbankControle.updateInCollection(user);
 	}
 
-	public void insertFoodInUserstorage(User user, StorageFood storageFood) throws Exception {
+	public void insertFoodInUserstorage(User user, StorageFood storageFood)
+			throws Exception {
 		user.addFood(storageFood);
 		saveUser(user);
 		inserFood(storageFood);
@@ -146,12 +146,16 @@ public class UserControle {
 		UI.getCurrent().getSession().setAttribute(User.class, user);
 	}
 
-	public void updateFoodInUserstorage(User user, StorageFood storageFood, String code)
-			throws Exception {
+	public void updateFoodInUserstorage(User user, StorageFood storageFood,
+			String code) throws Exception {
 		user.setUserStorage(deleteFoodInUserSorage(user, code));
 		user.addFood(storageFood);
 		saveUser(user);
 		inserFood(storageFood);
+	}
+
+	public StorageFood getFoodOfStorage(User user, String id) throws Exception {		
+		return user.getUserStorage().get(id);
 	}
 
 	private void inserFood(StorageFood storageFood) throws Exception {

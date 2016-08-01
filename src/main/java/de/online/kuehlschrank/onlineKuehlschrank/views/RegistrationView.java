@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -70,6 +71,7 @@ public class RegistrationView extends VerticalLayout implements View {
 		Button signUpButton = new Button(
 				lapi.getText(LapiKeynames.SIGN_UP_BUTTON),
 				FontAwesome.USER_PLUS);
+
 		signUpButton
 				.addClickListener(e -> {
 					if (validateTextFields(username, password, passwordConfirm,
@@ -111,8 +113,18 @@ public class RegistrationView extends VerticalLayout implements View {
 
 				});
 
+		Button cancekButton = new Button(lapi.getText(LapiKeynames.CANCEL));
+		cancekButton.addClickListener(e -> {
+			ViewKeynames.gotoView(ViewKeynames.LOGIN);
+		});
+
+		HorizontalLayout buttons = new HorizontalLayout();
+		buttons.addComponents(signUpButton,  cancekButton);
+		buttons.setSpacing(true);
+		buttons.setComponentAlignment(signUpButton, Alignment.MIDDLE_LEFT);
+		buttons.setComponentAlignment(cancekButton, Alignment.MIDDLE_RIGHT);
 		addComponents(username, email, emailConfirm, password, passwordConfirm,
-				signUpButton);
+				buttons);
 		setMargin(true);
 		setSpacing(true);
 	}

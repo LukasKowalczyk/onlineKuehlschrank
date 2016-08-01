@@ -14,7 +14,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -158,6 +157,9 @@ public class EditFoodOfUserStorageWindow extends Window {
 		unit.addItems((Object[]) Units.values());
 
 		amountAndUnit.addComponents(amount, unit);
+		amountAndUnit.setSpacing(true);
+		
+		HorizontalLayout expireDateFavorit = new HorizontalLayout();
 
 		final DateField expireDate = new DateField(
 				lapi.getText(LapiKeynames.EXPIRE_DATE) + " ("
@@ -165,6 +167,9 @@ public class EditFoodOfUserStorageWindow extends Window {
 		expireDate.addValidator(new DateValidator());
 		expireDate.setDateFormat(lapi.getText(LapiKeynames.DATE_FORMAT));
 		String caption = lapi.getText(LapiKeynames.ADD);
+
+		expireDateFavorit.addComponents(expireDate);
+		expireDateFavorit.setSpacing(true);
 		if (isUpdate) {
 			caption = lapi.getText(LapiKeynames.SAVE);
 			name.setValue(selectedFood.getFood().getName());
@@ -177,9 +182,10 @@ public class EditFoodOfUserStorageWindow extends Window {
 		final Button addButton = new Button(caption);
 		addButton.addClickListener(e -> {
 			try {
-				StorageFood food = new StorageFood(new Food(name.getValue(),code.getValue()), Integer.parseInt(amount
-						.getValue()), Units.getUnit(unit.getConvertedValue()
-						.toString()),  expireDate.getValue());
+				StorageFood food = new StorageFood(new Food(name.getValue(),
+						code.getValue()), Integer.parseInt(amount.getValue()),
+						Units.getUnit(unit.getConvertedValue().toString()),
+						expireDate.getValue());
 
 				User user = UserControle.getCurrentUser();
 				if (isUpdate) {
@@ -196,9 +202,11 @@ public class EditFoodOfUserStorageWindow extends Window {
 		});
 
 		content.addComponents(code, suggestionCode, name, suggestionName,
-				amountAndUnit, expireDate, new Label(""), addButton);
+				amountAndUnit, expireDateFavorit, addButton);
 		content.setMargin(true);
+		content.setSpacing(true);
 		setContent(content);
+		
 	}
 
 	private Map<String, Object> generateMap(List<Food> foodList) {
